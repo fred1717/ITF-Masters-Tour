@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% block title %}Draw {{ draw_id }} — ITF Masters Tour{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===== DRAW HEADER ===== */
+    .draw-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 24px 32px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .draw-header h1 {
+        font-family: var(--font-display);
+        font-size: 26px;
+        color: white;
+    }
+    .draw-header .meta {
+        font-size: 14px;
+        color: rgba(255,255,255,0.75);
+        margin-top: 4px;
+    }
+    .draw-header .meta span {
+        display: inline-block;
+        margin-right: 16px;
+    }
+
+    /* VIEW TOGGLE */
+    .view-toggle {
+        display: flex;
+        gap: 4px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 6px;
+        padding: 3px;
+    }
+    .view-toggle button {
+        padding: 5px 14px;
+        border: none;
+        border-radius: 4px;
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        background: transparent;
+        color: rgba(255,255,255,0.7);
+        transition: all 0.2s;
+    }
+    .view-toggle button.active {
+        background: white;
+        color: var(--navy);
+    }
+
+    /* ===== BRACKET CONTAINER ===== */
+    .bracket-wrapper {
+        overflow-x: auto;
+        padding: 8px 0 24px;
+    }
+    .bracket {
+        display: flex;
+        min-width: fit-content;
+    }
+
+    /* ===== ROUND COLUMN ===== */
+    .round-col {
+        display: flex;
+        flex-direction: column;
+        min-width: 230px;
+        max-width: 260px;
+    }
+    .round-title {
+        text-align: center;
+        font-weight: 700;
+        font-size: 11px;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: 1.8px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--blue-soft);
+    }
+    .round-matches {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        flex: 1;
+        position: relative;
+    }
+
+    /* ===== MATCH-PAIR WRAPPER (for connector lines) ===== */
+    .match-pair {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        position: relative;
+    }
+
+    /* ===== MATCH CARD ===== */
+    .match-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 6px;
+        overflow: hidden;
+        margin: 4px 0;
+        transition: box-shadow 0.2s, transform 0.15s;
+        position: relative;
+        z-index: 2;
+    }
+    .match-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
+    }
+    .match-card.bye-match {
+        opacity: 0.5;
+        border-style: dashed;
+        border-color: var(--gray-300);
+    }
+    .match-card.bye-match:hover {
+        box-shadow: none;
+        transform: none;
+    }
+
+    /* ===== PLAYER ROW ===== */
+    .player-row {
+        display: flex;
+        align-items: center;
+        padding: 7px 10px;
+        gap: 7px;
+        font-size: 13px;
+        border-bottom: 1px solid var(--gray-100);
+        transition: background 0.15s;
+        min-height: 34px;
+    }
+    .player-row:last-child { border-bottom: none; }
+
+    .player-row.winner {
+        background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%);
+        font-weight: 600;
+    }
+    .player-row.loser {
+        color: var(--gray-400);
+    }
+
+    /* Seed badge */
+    .player-seed {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gold-light);
+        color: #92400e;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .player-seed.empty {
+        background: transparent;
+    }
+
+    /* Player name */
+    .player-name {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .player-name.bye-text {
+        font-style: italic;
+        color: var(--gray-300);
+    }
+    .player-name.tbd-text {
+        color: var(--gray-300);
+        font-style: italic;
+    }
+
+    /* Score */
+    .player-score {
+        font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+        font-size: 11px;
+        color: var(--gray-500);
+        white-space: nowrap;
+        letter-spacing: 0.3px;
+    }
+    .player-row.winner .player-score {
+        color: var(--green);
+        font-weight: 600;
+    }
+
+    /* Match status strip */
+    .match-status-strip {
+        text-align: center;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-retired { color: #d97706; background: #fef3c7; }
+    .status-walkover { color: var(--red); background: var(--red-light); }
+    .status-dq { color: var(--red); background: var(--red-light); }
+
+    /* ===== BRACKET CONNECTOR LINES ===== */
+    .connector-col {
+        width: 28px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        position: relative;
+    }
+    .connector-pair {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    .connector-pair::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 25%;
+        bottom: 25%;
+        width: 0;
+        border-right: 2px solid var(--gray-300);
+    }
+    .connector-pair::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 100%;
+        height: 0;
+        border-top: 2px solid var(--gray-300);
+    }
+    /* Left-side horizontal ticks from match to connector */
+    .round-col:not(:last-child) .match-card::after {
+        content: '';
+        position: absolute;
+        right: -14px;
+        top: 50%;
+        width: 14px;
+        height: 0;
+        border-top: 2px solid var(--gray-300);
+        z-index: 1;
+    }
+    .round-col:not(:first-child) .match-card::before {
+        content: '';
+        position: absolute;
+        left: -14px;
+        top: 50%;
+        width: 14px;
+        height: 0;
+        border-top: 2px solid var(--gray-300);
+        z-index: 1;
+    }
+
+    /* ===== CHAMPION BANNER ===== */
+    .champion-banner {
+        background: linear-gradient(135deg, #d4a017 0%, #f59e0b 50%, #d4a017 100%);
+        padding: 20px;
+        text-align: center;
+        margin-top: 28px;
+        border-radius: var(--radius);
+        color: var(--navy);
+        box-shadow: 0 4px 15px rgba(212,160,23,0.3);
+    }
+    .champion-banner h2 {
+        font-family: var(--font-display);
+        font-size: 22px;
+        margin-bottom: 2px;
+    }
+    .champion-banner p {
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    /* ===== LIST VIEW ===== */
+    .match-list-item {
+        display: grid;
+        grid-template-columns: 70px 1fr 130px 110px;
+        gap: 12px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--gray-100);
+        font-size: 14px;
+        align-items: center;
+    }
+    .match-list-item:last-child { border-bottom: none; }
+    .match-list-header {
+        font-weight: 600;
+        color: var(--gray-500);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .match-list-players {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .match-list-players .vs {
+        color: var(--gray-400);
+        font-size: 12px;
+        margin: 0 4px;
+    }
+    .match-list-players .winner-name { font-weight: 600; color: var(--green); }
+    .match-list-players .loser-name { color: var(--gray-400); }
+
+    /* EMPTY STATE */
+    .empty-state {
+        padding: 60px;
+        text-align: center;
+        color: var(--gray-400);
+        font-size: 15px;
+    }
+    .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+</style>
+{% endblock %}
+
+{% block content %}
+{# ===== Compute round metadata ===== #}
+{% set round_order = ['R64','R32','R16','QF','SF','F'] %}
+{% set round_labels = {'R64':'Round of 64','R32':'Round of 32','R16':'Round of 16','QF':'Quarter-Finals','SF':'Semi-Finals','F':'Final'} %}
+
+{# Collect unique rounds in bracket order #}
+{% set rounds_present = [] %}
+{% for rc in round_order %}
+    {% if matches | selectattr('round_code', 'equalto', rc) | list | length > 0 %}
+        {% if rounds_present.append(rc) %}{% endif %}
+    {% endif %}
+{% endfor %}
+
+{# Find champion #}
+{% set champion_name = namespace(val=None) %}
+{% for fm in matches %}
+    {% if fm.round_code == 'F' and fm.winner_id %}
+        {% if fm.winner_id == fm.player1_id %}
+            {% set champion_name.val = fm.player1_display %}
+        {% else %}
+            {% set champion_name.val = fm.player2_display %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+{# Count match stats #}
+{% set completed_count = matches | selectattr('match_status_code', 'equalto', 'Completed') | list | length %}
+{% set total_count = matches | rejectattr('match_status_code', 'equalto', 'BYE') | list | length %}
+
+<div class="draw-header">
+    <div>
+        <h1>🎾 Draw #{{ draw_id }}</h1>
+        <div class="meta">
+            <span>{{ matches | length }} matches</span>
+            <span>{{ completed_count }}/{{ total_count }} completed</span>
+            {% if champion_name.val %}
+                <span>🏆 {{ champion_name.val }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="view-toggle">
+        <button class="active" onclick="showView('bracket')">Bracket</button>
+        <button onclick="showView('list')">List</button>
+    </div>
+</div>
+
+{% if matches %}
+
+    <!-- ===== BRACKET VIEW ===== -->
+    <div id="bracket-view">
+        <div class="bracket-wrapper">
+            <div class="bracket">
+                {% for i in range(rounds_present | length) %}
+                    {% set rc = rounds_present[i] %}
+                    {% set round_matches = matches | selectattr('round_code', 'equalto', rc) | sort(attribute='match_number') | list %}
+
+                    <div class="round-col">
+                        <div class="round-title">{{ round_labels.get(rc, rc) }}</div>
+                        <div class="round-matches">
+                            {% for m in round_matches %}
+                            <div class="match-pair">
+                                <div class="match-card {% if m.match_status_code == 'BYE' %}bye-match{% endif %}">
+                                    {# Player 1 #}
+                                    <div class="player-row
+                                        {% if m.winner_id and m.winner_id == m.player1_id %}winner
+                                        {% elif m.winner_id and m.winner_id != m.player1_id %}loser{% endif %}">
+                                        {% if m.p1_seed %}
+                                            <span class="player-seed">{{ m.p1_seed }}</span>
+                                        {% else %}
+                                            <span class="player-seed empty"></span>
+                                        {% endif %}
+                                        <span class="player-name
+                                            {% if m.player1_display == 'Bye' %}bye-text
+                                            {% elif m.player1_display == 'TBD' %}tbd-text{% endif %}">
+                                            {{ m.player1_display }}
+                                        </span>
+                                        {% if m.score_display and m.winner_id == m.player1_id %}
+                                            <span class="player-score">{{ m.score_display }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {# Player 2 #}
+                                    <div class="player-row
+                                        {% if m.winner_id and m.winner_id == m.player2_id %}winner
+                                        {% elif m.winner_id and m.winner_id != m.player2_id %}loser{% endif %}">
+                                        {% if m.p2_seed %}
+                                            <span class="player-seed">{{ m.p2_seed }}</span>
+                                        {% else %}
+                                            <span class="player-seed empty"></span>
+                                        {% endif %}
+                                        <span class="player-name
+                                            {% if m.player2_display == 'Bye' %}bye-text
+                                            {% elif m.player2_display == 'TBD' %}tbd-text{% endif %}">
+                                            {{ m.player2_display }}
+                                        </span>
+                                        {% if m.score_display and m.winner_id == m.player2_id %}
+                                            <span class="player-score">{{ m.score_display }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {# Special status strip #}
+                                    {% if m.match_status_code == 'Retired' %}
+                                        <div class="match-status-strip status-retired">Retired</div>
+                                    {% elif m.match_status_code == 'Walkover' %}
+                                        <div class="match-status-strip status-walkover">Walkover</div>
+                                    {% elif m.match_status_code == 'Disqualification' %}
+                                        <div class="match-status-strip status-dq">Disqualified</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Connector column between rounds (not after last round) #}
+                    {% if i < rounds_present | length - 1 %}
+                    {% set next_rc = rounds_present[i + 1] %}
+                    {% set next_count = matches | selectattr('round_code', 'equalto', next_rc) | list | length %}
+                    <div class="connector-col">
+                        {% for c in range(next_count) %}
+                        <div class="connector-pair"></div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if champion_name.val %}
+        <div class="champion-banner">
+            <h2>🏆 Champion</h2>
+            <p>{{ champion_name.val }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== LIST VIEW ===== -->
+    <div id="list-view" style="display: none;">
+        <div class="card">
+            <div class="match-list-item match-list-header">
+                <span>Round</span>
+                <span>Players</span>
+                <span>Score</span>
+                <span>Status</span>
+            </div>
+            {% for rc in round_order %}
+                {% set round_matches = matches | selectattr('round_code', 'equalto', rc) | sort(attribute='match_number') | list %}
+                {% for m in round_matches %}
+                <div class="match-list-item">
+                    <span><span class="badge badge-blue">{{ m.round_code }}</span></span>
+                    <span class="match-list-players">
+                        {% if m.winner_id == m.player1_id %}
+                            <span class="winner-name">{{ m.player1_display }}</span>
+                        {% else %}
+                            <span{% if m.winner_id %} class="loser-name"{% endif %}>{{ m.player1_display }}</span>
+                        {% endif %}
+                        <span class="vs">vs</span>
+                        {% if m.winner_id == m.player2_id %}
+                            <span class="winner-name">{{ m.player2_display }}</span>
+                        {% else %}
+                            <span{% if m.winner_id %} class="loser-name"{% endif %}>{{ m.player2_display }}</span>
+                        {% endif %}
+                    </span>
+                    <span class="text-mono" style="font-size:12px;">{{ m.score_display or '—' }}</span>
+                    <span>
+                        {% if m.match_status_code == 'Completed' %}
+                            <span class="badge badge-green">Completed</span>
+                        {% elif m.match_status_code == 'BYE' %}
+                            <span class="badge badge-gray">Bye</span>
+                        {% elif m.match_status_code == 'Retired' %}
+                            <span class="badge badge-gold">Retired</span>
+                        {% elif m.match_status_code == 'Walkover' %}
+                            <span class="badge badge-red">W/O</span>
+                        {% elif m.match_status_code == 'Disqualification' %}
+                            <span class="badge badge-red">DQ</span>
+                        {% elif m.match_status_code == 'Scheduled' or m.match_status_code == 'SCHED' %}
+                            <span class="badge badge-gray">Scheduled</span>
+                        {% else %}
+                            <span class="badge badge-gray">{{ m.match_status_code }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% else %}
+    <div class="card empty-state">
+        <div class="icon">🎾</div>
+        No matches found for this draw.<br>
+        <span class="text-sm">Generate a match skeleton from the Admin panel.</span>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showView(view) {
+    document.getElementById('bracket-view').style.display = view === 'bracket' ? '' : 'none';
+    document.getElementById('list-view').style.display = view === 'list' ? '' : 'none';
+    document.querySelectorAll('.view-toggle button').forEach(b => {
+        b.classList.toggle('active', b.textContent.trim().toLowerCase() === view);
+    });
+}
+</script>
+{% endblock %}

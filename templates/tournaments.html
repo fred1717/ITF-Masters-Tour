@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Tournaments — ITF Masters Tour{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Tournaments</h1>
+    <p class="subtitle">ITF Masters Tour schedule and results</p>
+</div>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tournament</th>
+                <th>Year</th>
+                <th>Week</th>
+                <th>Start</th>
+                <th>End</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in tournaments %}
+            <tr>
+                <td class="text-mono">{{ t.tournament_id }}</td>
+                <td>
+                    <a href="/tournament/{{ t.tournament_id }}" style="color: var(--navy); font-weight: 600; text-decoration: none;">
+                        {{ t.name }}
+                    </a>
+                </td>
+                <td>{{ t.tournament_year }}</td>
+                <td>
+                    <span class="badge badge-blue">W{{ t.tournament_week }}</span>
+                </td>
+                <td class="text-sm text-muted">{{ t.start_date }}</td>
+                <td class="text-sm text-muted">{{ t.end_date }}</td>
+                <td>
+                    <a href="/tournament/{{ t.tournament_id }}" class="btn btn-outline btn-sm">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+\i data/sql/prerequisites/agecategory_prerequisites.sql
+\i data/sql/prerequisites/gender_prerequisites.sql
+\i data/sql/prerequisites/playerstatus_prerequisites.sql
+\i data/sql/prerequisites/matchstatus_prerequisites.sql
+\i data/sql/prerequisites/matchrounds_prerequisites.sql
+\i data/sql/prerequisites/stageresults_prerequisites.sql
+\i data/sql/prerequisites/seedingrules_prerequisites.sql
+\i data/sql/prerequisites/drawstatus_prerequisites.sql
+\i data/sql/prerequisites/country_prerequisites.sql
+\i data/sql/prerequisites/location_prerequisites.sql
+\i data/sql/prerequisites/venue_prerequisites.sql
+\i data/sql/prerequisites/surfaces_prerequisites.sql
+\i data/sql/prerequisites/tournamentcategory_prerequisites.sql
+\i data/sql/prerequisites/pointsrules_prerequisites.sql
+\i data/sql/prerequisites/players_prerequisites.sql
+\i data/sql/prerequisites/tournaments_prerequisites.sql
+\i data/sql/prerequisites/draws_prerequisites.sql

@@ -1,0 +1,809 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel — Fantasy ITF Masters Tour{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+
+    .admin-section {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+    .admin-section-header {
+        padding: 14px 20px;
+        font-weight: 700;
+        font-size: 15px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .header-entry { background: var(--blue); }
+    .header-draw { background: var(--navy); }
+    .header-skeleton { background: var(--gray-700); }
+    .header-result { background: #7c3aed; }
+
+    .admin-section-body {
+        padding: 20px;
+    }
+
+    /* AUTOCOMPLETE */
+    .autocomplete-wrap {
+        position: relative;
+    }
+    .autocomplete-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid var(--gray-300);
+        border-top: none;
+        border-radius: 0 0 6px 6px;
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 50;
+        box-shadow: var(--shadow-lg);
+        display: none;
+    }
+    .autocomplete-item {
+        padding: 8px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--gray-100);
+    }
+    .autocomplete-item:hover { background: var(--blue-soft); }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .ac-name { font-weight: 500; }
+    .ac-meta { color: var(--gray-400); font-size: 12px; }
+
+    /* SCORE GRID */
+    .score-grid {
+        display: grid;
+        grid-template-columns: auto repeat(4, 52px);
+        gap: 6px;
+        align-items: center;
+        font-size: 13px;
+    }
+    .score-grid .score-label {
+        font-weight: 600;
+        color: var(--gray-600);
+        text-align: right;
+        padding-right: 8px;
+    }
+    .score-grid .score-header {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        text-align: center;
+        letter-spacing: 0.3px;
+    }
+    .score-input {
+        width: 100%;
+        padding: 6px;
+        border: 1px solid var(--gray-300);
+        border-radius: 4px;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 13px;
+        text-align: center;
+        transition: border-color 0.2s;
+    }
+    .score-input:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+    }
+
+    /* DEADLINE INFO */
+    .deadline-info {
+        background: var(--gold-light);
+        border: 1px solid #fde68a;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 13px;
+        color: #92400e;
+        margin-bottom: 16px;
+    }
+
+    /* SELECTED PLAYER CHIP */
+    .player-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-top: 6px;
+    }
+    .player-chip .remove {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--blue);
+        opacity: 0.6;
+    }
+    .player-chip .remove:hover { opacity: 1; }
+
+    .full-width { grid-column: 1 / -1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Administration</h1>
+    <p class="subtitle">Tournament management — entries, draws, results</p>
+</div>
+
+<div class="admin-grid">
+
+    <!-- ========== 1. CREATE ENTRY ========== -->
+    <div class="admin-section">
+        <div class="admin-section-header header-entry">📝 Create Entry</div>
+        <div class="admin-section-body">
+            <div id="entry-deadline-info" class="deadline-info" style="display:none;"></div>
+
+            <form method="post" action="/admin/entry" id="entry-form">
+                <div class="form-group">
+                    <label class="form-label">Tournament</label>
+                    <select name="tournament_id" id="entry-tournament" class="form-select" required>
+                        <option value="">Select tournament…</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Player</label>
+                    <div class="autocomplete-wrap">
+                        <input type="text" id="player-search" class="form-input" placeholder="Type player name…" autocomplete="off">
+                        <div id="player-results" class="autocomplete-list"></div>
+                    </div>
+                    <input type="hidden" name="player_id" id="player-id-field">
+                    <div id="player-chip-area"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Age Category</label>
+                        <select name="age_category_id" id="entry-age-cat" class="form-select" required>
+                            <option value="">Loading…</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select name="gender_id" id="entry-gender" class="form-select" required>
+                            <option value="">Loading…</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Entry Points</label>
+                    <input type="number" name="entry_points" id="entry-points" class="form-input" value="0" min="0">
+                    <span class="form-hint">Auto-filled from latest ranking when player is selected</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;">Create Entry</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== 2. GENERATE DRAW ========== -->
+    <div class="admin-section">
+        <div class="admin-section-header header-draw">🎯 Generate Draw</div>
+        <div class="admin-section-body">
+            <form method="post" action="/admin/generate-draw">
+                <div class="form-group">
+                    <label class="form-label">Tournament</label>
+                    <select name="tournament_id" id="draw-tournament" class="form-select" required>
+                        <option value="">Select tournament…</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Age Category</label>
+                        <select name="age_category_id" id="draw-age-cat" class="form-select" required>
+                            <option value="">Loading…</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select name="gender_id" id="draw-gender" class="form-select" required>
+                            <option value="">Loading…</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Super Tie-Break in 3rd Set?</label>
+                    <select name="has_supertiebreak" class="form-select">
+                        <option value="true" selected>Yes (75% of draws)</option>
+                        <option value="false">No — full 3rd set</option>
+                    </select>
+                    <span class="form-hint">Rules.md: 75% of draws use super tie-break</span>
+                </div>
+
+                <button type="submit" class="btn btn-navy" style="width:100%;">Generate Draw</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== 3. CREATE MATCH SKELETON ========== -->
+    <div class="admin-section">
+        <div class="admin-section-header header-skeleton">🦴 Create Match Skeleton</div>
+        <div class="admin-section-body">
+            <form method="post" action="/admin/create-skeleton">
+                <div class="form-group">
+                    <label class="form-label">Draw ID</label>
+                    <input type="number" name="draw_id" class="form-input" required placeholder="e.g. 233">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tournament Start Date</label>
+                    <input type="date" name="tournament_start_date" class="form-input">
+                    <span class="form-hint">Defaults to today if blank</span>
+                </div>
+                <button type="submit" class="btn btn-outline" style="width:100%; color: var(--gray-700);">Create Skeleton</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== 4. SUBMIT RESULT ========== -->
+    <div class="admin-section">
+        <div class="admin-section-header header-result">🏆 Submit Match Result</div>
+        <div class="admin-section-body">
+            <form method="post" action="/admin/submit-result" id="result-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Draw ID</label>
+                        <input type="number" name="draw_id" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Match ID</label>
+                        <input type="number" name="match_id" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Match Status</label>
+                        <select name="match_status_id" id="result-status" class="form-select" required>
+                            <option value="">Loading…</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Winner Player ID</label>
+                        <input type="number" name="winner_id" class="form-input" required>
+                    </div>
+                </div>
+
+                <!-- SCORE ENTRY -->
+                <div style="margin: 16px 0 8px; font-weight: 600; font-size: 13px; color: var(--gray-600);">Score</div>
+                <div class="score-grid">
+                    <span></span>
+                    <span class="score-header">P1</span>
+                    <span class="score-header">P2</span>
+                    <span class="score-header">TB P1</span>
+                    <span class="score-header">TB P2</span>
+
+                    <span class="score-label">Set 1</span>
+                    <input class="score-input" name="set1_p1" type="number" min="0" max="7">
+                    <input class="score-input" name="set1_p2" type="number" min="0" max="7">
+                    <input class="score-input" name="set1_tb_p1" type="number" min="0">
+                    <input class="score-input" name="set1_tb_p2" type="number" min="0">
+
+                    <span class="score-label">Set 2</span>
+                    <input class="score-input" name="set2_p1" type="number" min="0" max="7">
+                    <input class="score-input" name="set2_p2" type="number" min="0" max="7">
+                    <input class="score-input" name="set2_tb_p1" type="number" min="0">
+                    <input class="score-input" name="set2_tb_p2" type="number" min="0">
+
+                    <div id="set3-fields" style="display:contents;">
+                        <span class="score-label">Set 3</span>
+                        <input class="score-input" name="set3_p1" type="number" min="0" max="7">
+                        <input class="score-input" name="set3_p2" type="number" min="0" max="7">
+                        <input class="score-input" name="set3_tb_p1" type="number" min="0">
+                        <input class="score-input" name="set3_tb_p2" type="number" min="0">
+                    </div>
+                </div>
+
+                <div id="stb-fields" style="display:none;">
+                    <div style="margin-top: 12px;">
+                        <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+                            <div class="form-group">
+                                <label class="form-label">Super TB — P1</label>
+                                <input class="score-input" name="stb_p1" type="number" min="0" style="width:100%;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Super TB — P2</label>
+                                <input class="score-input" name="stb_p2" type="number" min="0" style="width:100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px; background:#7c3aed;">Submit Result</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ============================================================
+// BOOT: load reference data + tournaments in 2 calls (not 15)
+// ============================================================
+let refData = {};
+let tournaments = [];
+
+async function boot() {
+    try {
+        const [refRes, tournRes] = await Promise.all([
+            fetch('/api/reference-data'),
+            fetch('/api/tournaments?recent=30'),
+        ]);
+        refData = await refRes.json();
+        tournaments = await tournRes.json();
+
+        populateDropdowns();
+        populateTournaments();
+    } catch (e) {
+        console.error('Boot error:', e);
+        showStatus('boot-error', '⚠ Failed to load data — check Flask is running');
+    }
+}
+
+
+// Dynamic Set 3 / Super TB visibility based on draw's has_supertiebreak
+document.querySelector('#result-form input[name="draw_id"]').addEventListener('change', async function() {
+    const drawId = this.value;
+    const set3 = document.getElementById('set3-fields');
+    const stb = document.getElementById('stb-fields');
+    if (!drawId) { set3.style.display = 'contents'; stb.style.display = 'none'; return; }
+    try {
+        const res = await fetch('/api/draw-info/' + drawId);
+        const data = await res.json();
+        if (data.has_supertiebreak) {
+            set3.style.display = 'none';
+            stb.style.display = 'block';
+        } else {
+            set3.style.display = 'contents';
+            stb.style.display = 'none';
+        }
+    } catch(e) { set3.style.display = 'contents'; stb.style.display = 'none'; }
+});
+
+
+function populateDropdowns() {
+    // Age categories
+    ['entry-age-cat', 'draw-age-cat'].forEach(id => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">Select…</option>';
+        refData.age_categories.forEach(ac => {
+            sel.innerHTML += `<option value="${ac.age_category_id}">${ac.code} — ${ac.description}</option>`;
+        });
+    });
+
+    // Genders
+    ['entry-gender', 'draw-gender'].forEach(id => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">Select…</option>';
+        refData.genders.forEach(g => {
+            sel.innerHTML += `<option value="${g.gender_id}">${g.code} — ${g.description}</option>`;
+        });
+    });
+
+    // Match statuses (exclude Scheduled=1 and Cancelled=5)
+    const msSelect = document.getElementById('result-status');
+    msSelect.innerHTML = '<option value="">Select…</option>';
+    refData.match_statuses.forEach(ms => {
+        if (ms.match_status_id !== 1 && ms.match_status_id !== 5) {
+            msSelect.innerHTML += `<option value="${ms.match_status_id}">${ms.code}</option>`;
+        }
+    });
+}
+
+function populateTournaments() {
+    const selects = [
+        document.getElementById('entry-tournament'),
+        document.getElementById('draw-tournament'),
+    ];
+    const html = '<option value="">Select tournament…</option>' +
+        tournaments.map(t =>
+            `<option value="${t.tournament_id}">${t.tournament_id} — ${t.name} (W${t.tournament_week})</option>`
+        ).join('');
+    selects.forEach(sel => { sel.innerHTML = html; });
+}
+
+// ============================================================
+// PLAYER AUTOCOMPLETE
+// ============================================================
+let searchTimeout = null;
+const searchInput = document.getElementById('player-search');
+const resultsList = document.getElementById('player-results');
+const playerIdField = document.getElementById('player-id-field');
+const chipArea = document.getElementById('player-chip-area');
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const q = this.value.trim();
+    if (q.length < 2) { resultsList.style.display = 'none'; return; }
+
+    searchTimeout = setTimeout(async () => {
+        try {
+            const res = await fetch(`/api/players/search?q=${encodeURIComponent(q)}`);
+            const players = await res.json();
+            if (!players.length) {
+                resultsList.innerHTML = '<div style="padding:10px;color:var(--gray-400);font-size:13px;">No players found</div>';
+            } else {
+                resultsList.innerHTML = players.map(p => `
+                    <div class="autocomplete-item" data-id="${p.player_id}" data-name="${p.first_name} ${p.last_name}"
+                         data-birth="${p.birth_year}" data-gender="${p.gender_id}">
+                        <span class="ac-name">${p.first_name} ${p.last_name}</span>
+                        <span class="ac-meta">${p.country || ''} · b.${p.birth_year} · ${p.gender_code}</span>
+                    </div>
+                `).join('');
+            }
+            resultsList.style.display = 'block';
+        } catch (e) {
+            console.error('Search error:', e);
+        }
+    }, 250);
+});
+
+resultsList.addEventListener('click', async function(e) {
+    const item = e.target.closest('.autocomplete-item');
+    if (!item) return;
+
+    const pid = item.dataset.id;
+    const pname = item.dataset.name;
+    const pgender = item.dataset.gender;
+
+    playerIdField.value = pid;
+    searchInput.value = '';
+    resultsList.style.display = 'none';
+
+    chipArea.innerHTML = `
+        <div class="player-chip">
+            ${pname} (ID: ${pid})
+            <span class="remove" onclick="clearPlayer()">&times;</span>
+        </div>
+    `;
+
+    // Auto-select gender from player data
+    const genderSel = document.getElementById('entry-gender');
+    if (pgender && genderSel) genderSel.value = pgender;
+
+    // Auto-fill entry points from latest ranking
+    try {
+        const tid = document.getElementById('entry-tournament').value;
+        const res = await fetch(`/api/player/${pid}/ranking${tid ? '?tournament_id=' + tid : ''}`);
+        const rank = await res.json();
+        document.getElementById('entry-points').value = rank.total_points || 0;
+        // Auto-select age category from ranking if available
+        if (rank.age_category_id) {
+            document.getElementById('entry-age-cat').value = rank.age_category_id;
+        }
+    } catch (_) {}
+});
+
+function clearPlayer() {
+    playerIdField.value = '';
+    chipArea.innerHTML = '';
+    document.getElementById('entry-points').value = '0';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.autocomplete-wrap')) {
+        resultsList.style.display = 'none';
+    }
+});
+
+// ============================================================
+// DEADLINE INFO on tournament select
+// ============================================================
+document.getElementById('entry-tournament').addEventListener('change', async function() {
+    const tid = this.value;
+    const infoDiv = document.getElementById('entry-deadline-info');
+    if (!tid) { infoDiv.style.display = 'none'; return; }
+
+    try {
+        const res = await fetch(`/api/tournament/${tid}/info`);
+        const t = await res.json();
+        const dl = new Date(t.entry_deadline);
+        const now = new Date();
+        const diff = dl - now;
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(hours / 24);
+
+        infoDiv.style.display = 'block';
+        if (diff > 0) {
+            infoDiv.textContent = `⏰ Entry deadline: ${dl.toUTCString()} (${days}d ${hours % 24}h remaining)`;
+            infoDiv.style.background = '#fef3c7';
+            infoDiv.style.borderColor = '#fde68a';
+            infoDiv.style.color = '#92400e';
+        } else {
+            infoDiv.textContent = `❌ Entry deadline passed: ${dl.toUTCString()}`;
+            infoDiv.style.background = '#fee2e2';
+            infoDiv.style.borderColor = '#fecaca';
+            infoDiv.style.color = '#dc2626';
+        }
+    } catch (_) {
+        infoDiv.style.display = 'none';
+    }
+});
+
+// ============================================================
+// RESULT FORM: load matches when draw_id is entered
+// ============================================================
+const resultDrawInput = document.querySelector('#result-form input[name="draw_id"]');
+const matchSelect = document.querySelector('#result-form input[name="match_id"]');
+let drawMatches = [];
+
+if (resultDrawInput) {
+    resultDrawInput.addEventListener('change', loadDrawMatches);
+    resultDrawInput.addEventListener('blur', loadDrawMatches);
+}
+
+async function loadDrawMatches() {
+    const drawId = resultDrawInput.value;
+    if (!drawId) return;
+
+    try {
+        const res = await fetch(`/api/draw/${drawId}/matches`);
+        drawMatches = await res.json();
+
+        // Show match picker below the match_id input
+        let picker = document.getElementById('match-picker');
+        if (!picker) {
+            picker = document.createElement('div');
+            picker.id = 'match-picker';
+            picker.style.cssText = 'max-height:160px;overflow-y:auto;border:1px solid var(--gray-200);border-radius:6px;margin-top:6px;font-size:13px;';
+            matchSelect.parentElement.appendChild(picker);
+        }
+
+        // Only show unplayed matches (status_id = 1 = Scheduled)
+        const pending = drawMatches.filter(m => m.match_status_id === 1 && m.player1_id && m.player2_id);
+        if (!pending.length) {
+            picker.innerHTML = '<div style="padding:8px;color:var(--gray-400);">No pending matches with both players</div>';
+            return;
+        }
+
+        picker.innerHTML = pending.map(m => `
+            <div style="padding:6px 10px;border-bottom:1px solid var(--gray-100);cursor:pointer;display:flex;justify-content:space-between;"
+                 onclick="selectMatch(${m.match_id}, ${m.player1_id}, ${m.player2_id}, '${m.p1_name}', '${m.p2_name}')">
+                <span><strong>${m.round_code}</strong> #${m.match_number}</span>
+                <span>${m.p1_name || 'TBD'} vs ${m.p2_name || 'TBD'}</span>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Match load error:', e);
+    }
+}
+
+function selectMatch(matchId, p1Id, p2Id, p1Name, p2Name) {
+    document.querySelector('#result-form input[name="match_id"]').value = matchId;
+
+    // Show player labels on score grid
+    let label = document.getElementById('match-players-label');
+    if (!label) {
+        label = document.createElement('div');
+        label.id = 'match-players-label';
+        label.style.cssText = 'margin:8px 0;font-size:13px;padding:8px 12px;background:var(--blue-soft);border-radius:6px;';
+        document.querySelector('.score-grid').before(label);
+    }
+    label.innerHTML = `<strong>P1:</strong> ${p1Name} (${p1Id}) &nbsp;|&nbsp; <strong>P2:</strong> ${p2Name} (${p2Id})`;
+}
+
+// ============================================================
+// CLIENT-SIDE SCORE VALIDATION (mirrors validate_tennis_matches.py)
+// ============================================================
+function isValidSetScore(p1, p2) {
+    // Valid completed set scores: 6-0..6-4, 7-5, 7-6
+    if (p1 === 6 && p2 >= 0 && p2 <= 4) return true;
+    if (p2 === 6 && p1 >= 0 && p1 <= 4) return true;
+    if ((p1 === 7 && p2 === 5) || (p1 === 5 && p2 === 7)) return true;
+    if ((p1 === 7 && p2 === 6) || (p1 === 6 && p2 === 7)) return true;
+    return false;
+}
+
+function requiresTiebreak(p1, p2) {
+    return (p1 === 7 && p2 === 6) || (p1 === 6 && p2 === 7);
+}
+
+function isValidTiebreak(tb1, tb2) {
+    // First to 7, win by 2
+    const hi = Math.max(tb1, tb2);
+    const lo = Math.min(tb1, tb2);
+    if (hi < 7) return false;
+    if (hi === 7 && lo <= 5) return true;
+    if (hi > 7 && (hi - lo) === 2) return true;
+    return false;
+}
+
+function isValidSuperTiebreak(stb1, stb2) {
+    // First to 10, win by 2
+    const hi = Math.max(stb1, stb2);
+    const lo = Math.min(stb1, stb2);
+    if (hi < 10) return false;
+    if (hi === 10 && lo <= 8) return true;
+    if (hi > 10 && (hi - lo) === 2) return true;
+    return false;
+}
+
+function setsAreSplit(s1p1, s1p2, s2p1, s2p2) {
+    const p1wonS1 = s1p1 > s1p2;
+    const p1wonS2 = s2p1 > s2p2;
+    return p1wonS1 !== p1wonS2;
+}
+
+const resultForm = document.getElementById('result-form');
+let validationBox = null;
+
+resultForm.addEventListener('submit', function(e) {
+    const errors = validateScoreForm();
+    if (errors.length > 0) {
+        e.preventDefault();
+        showValidationErrors(errors);
+    } else {
+        hideValidationErrors();
+    }
+});
+
+function getIntVal(name) {
+    const el = resultForm.querySelector(`[name="${name}"]`);
+    const v = el ? el.value.trim() : '';
+    return v === '' ? null : parseInt(v, 10);
+}
+
+function validateScoreForm() {
+    const errors = [];
+    const statusId = getIntVal('match_status_id');
+    const winnerId = getIntVal('winner_id');
+
+    if (!statusId) { errors.push('Match status is required'); return errors; }
+    if (!winnerId) { errors.push('Winner player ID is required'); return errors; }
+
+    // Walkover (3) = no scores needed
+    if (statusId === 3) return errors;
+
+    const s1p1 = getIntVal('set1_p1'), s1p2 = getIntVal('set1_p2');
+    const s2p1 = getIntVal('set2_p1'), s2p2 = getIntVal('set2_p2');
+    const s3p1 = getIntVal('set3_p1'), s3p2 = getIntVal('set3_p2');
+    const tb1p1 = getIntVal('set1_tb_p1'), tb1p2 = getIntVal('set1_tb_p2');
+    const tb2p1 = getIntVal('set2_tb_p1'), tb2p2 = getIntVal('set2_tb_p2');
+    const tb3p1 = getIntVal('set3_tb_p1'), tb3p2 = getIntVal('set3_tb_p2');
+    const stbP1 = getIntVal('stb_p1'), stbP2 = getIntVal('stb_p2');
+
+    // Completed (2) or Disqualification (6): require valid full scores
+    // Retired (4): allow partial scores
+    const isRetired = (statusId === 4);
+    const isDQ = (statusId === 6);
+    const isCompleted = (statusId === 2);
+
+    // Set 1 must exist
+    if (s1p1 === null || s1p2 === null) {
+        errors.push('Set 1 scores are required');
+        return errors;
+    }
+
+    // Validate Set 1
+    if (!isRetired) {
+        if (!isValidSetScore(s1p1, s1p2)) {
+            errors.push(`Set 1 score ${s1p1}-${s1p2} is not a valid completed set score`);
+        }
+    }
+    if (requiresTiebreak(s1p1, s1p2)) {
+        if (tb1p1 === null || tb1p2 === null) {
+            errors.push('Set 1 was 7-6 — tiebreak scores required');
+        } else if (!isRetired && !isValidTiebreak(tb1p1, tb1p2)) {
+            errors.push(`Set 1 tiebreak ${tb1p1}-${tb1p2} is invalid (first to 7, win by 2)`);
+        }
+    }
+
+    // Set 2 must exist for completed
+    if (isCompleted && (s2p1 === null || s2p2 === null)) {
+        errors.push('Set 2 scores are required for a completed match');
+        return errors;
+    }
+
+    // Validate Set 2 if present
+    if (s2p1 !== null && s2p2 !== null) {
+        if (!isRetired) {
+            if (!isValidSetScore(s2p1, s2p2)) {
+                errors.push(`Set 2 score ${s2p1}-${s2p2} is not a valid completed set score`);
+            }
+        }
+        if (requiresTiebreak(s2p1, s2p2)) {
+            if (tb2p1 === null || tb2p2 === null) {
+                errors.push('Set 2 was 7-6 — tiebreak scores required');
+            } else if (!isRetired && !isValidTiebreak(tb2p1, tb2p2)) {
+                errors.push(`Set 2 tiebreak ${tb2p1}-${tb2p2} is invalid`);
+            }
+        }
+
+        // Check if sets are split → need Set 3 or super TB for completed
+        if (isCompleted && s2p1 !== null && setsAreSplit(s1p1, s1p2, s2p1, s2p2)) {
+            const hasSet3 = (s3p1 !== null && s3p2 !== null);
+            const hasSTB = (stbP1 !== null && stbP2 !== null);
+            if (!hasSet3 && !hasSTB) {
+                errors.push('Sets are split 1-1 — need Set 3 or super tiebreak');
+            }
+        }
+    }
+
+    // Validate Set 3 if present
+    if (s3p1 !== null && s3p2 !== null) {
+        // Cannot have both Set 3 and super TB
+        if (stbP1 !== null && stbP2 !== null) {
+            errors.push('Cannot have both a 3rd set and a super tiebreak');
+        }
+        if (!isRetired && !isValidSetScore(s3p1, s3p2)) {
+            errors.push(`Set 3 score ${s3p1}-${s3p2} is not a valid completed set score`);
+        }
+        if (requiresTiebreak(s3p1, s3p2)) {
+            if (tb3p1 === null || tb3p2 === null) {
+                errors.push('Set 3 was 7-6 — tiebreak scores required');
+            } else if (!isRetired && !isValidTiebreak(tb3p1, tb3p2)) {
+                errors.push(`Set 3 tiebreak ${tb3p1}-${tb3p2} is invalid`);
+            }
+        }
+    }
+
+    // Validate super tiebreak if present
+    if (stbP1 !== null && stbP2 !== null) {
+        if (!isRetired && !isValidSuperTiebreak(stbP1, stbP2)) {
+            errors.push(`Super tiebreak ${stbP1}-${stbP2} is invalid (first to 10, win by 2)`);
+        }
+    }
+
+    return errors;
+}
+
+function showValidationErrors(errors) {
+    if (!validationBox) {
+        validationBox = document.createElement('div');
+        validationBox.id = 'score-validation';
+        validationBox.style.cssText = 'margin-bottom:12px;padding:12px;border-radius:6px;font-size:13px;background:#fee2e2;border:1px solid #fecaca;color:#dc2626;';
+        resultForm.prepend(validationBox);
+    }
+    validationBox.innerHTML = '<strong>⚠ Score validation:</strong><br>' + errors.map(e => '• ' + e).join('<br>');
+    validationBox.style.display = 'block';
+}
+
+function hideValidationErrors() {
+    if (validationBox) validationBox.style.display = 'none';
+}
+
+// ============================================================
+// UTILITY
+// ============================================================
+function showStatus(id, msg) {
+    let el = document.getElementById(id);
+    if (!el) {
+        el = document.createElement('div');
+        el.id = id;
+        el.style.cssText = 'padding:10px 14px;border-radius:6px;font-size:13px;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;margin-bottom:12px;';
+        document.querySelector('.admin-grid').before(el);
+    }
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+// Boot on load
+boot();
+</script>
+{% endblock %}

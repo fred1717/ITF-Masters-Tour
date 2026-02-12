@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Rankings — ITF Masters Tour{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rankings-controls {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .rank-num {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+    .rank-1 { background: linear-gradient(135deg, var(--gold), #f59e0b); color: white; }
+    .rank-2 { background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: white; }
+    .rank-3 { background: linear-gradient(135deg, #d97706, #f59e0b); color: white; }
+    .rank-other { background: var(--gray-100); color: var(--gray-600); }
+
+    .points-bar {
+        height: 6px;
+        background: var(--gray-100);
+        border-radius: 3px;
+        overflow: hidden;
+        min-width: 80px;
+    }
+    .points-bar-fill {
+        height: 100%;
+        background: var(--blue);
+        border-radius: 3px;
+        transition: width 0.3s;
+    }
+    .player-link {
+        font-weight: 600;
+        color: var(--navy);
+        text-decoration: none;
+    }
+    .player-link:hover { color: var(--blue); }
+    .country-flag {
+        font-size: 12px;
+        color: var(--gray-500);
+    }
+    .category-tab {
+        padding: 8px 18px;
+        border: 1px solid var(--gray-300);
+        border-radius: 6px;
+        background: white;
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--gray-600);
+    }
+    .category-tab:hover { border-color: var(--blue); color: var(--blue); }
+    .category-tab.active {
+        background: var(--navy);
+        color: white;
+        border-color: var(--navy);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Weekly Rankings</h1>
+    {% if year and week %}
+    <p class="subtitle">Week {{ week }}, {{ year }}</p>
+    {% endif %}
+</div>
+
+<!-- WEEK SELECTOR -->
+<form method="get" action="/rankings" class="rankings-controls">
+    <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Year</label>
+        <input type="number" name="year" value="{{ year or '' }}" class="form-input" style="width:100px;" placeholder="2026">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Week</label>
+        <input type="number" name="week" value="{{ week or '' }}" class="form-input" style="width:100px;" placeholder="1">
+    </div>
+    <button type="submit" class="btn btn-primary">Load</button>
+</form>
+
+{% if rankings %}
+    <!-- CATEGORY TABS -->
+    {% set categories = [] %}
+    {% for r in rankings %}
+        {% set cat_key = r.gender_code ~ ' ' ~ r.age_code %}
+        {% if cat_key not in categories %}
+            {% if categories.append(cat_key) %}{% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+        {% for cat in categories %}
+        <button class="category-tab {% if loop.first %}active{% endif %}"
+                onclick="filterCategory(this, '{{ cat }}')">{{ cat }}</button>
+        {% endfor %}
+    </div>
+
+    {% for r_cat in categories %}
+    {% set cat_rankings = rankings | selectattr('gender_code', 'equalto', r_cat.split(' ')[0]) | selectattr('age_code', 'equalto', r_cat.split(' ')[1]) | list %}
+    {% set max_pts = cat_rankings | map(attribute='total_points') | max if cat_rankings else 1 %}
+    <div class="card ranking-group mb-4" data-category="{{ r_cat }}" {% if not loop.first %}style="display:none;"{% endif %}>
+        <div class="card-header">{{ r_cat }} Rankings — Week {{ week }}, {{ year }}</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width:60px;">Rank</th>
+                    <th>Player</th>
+                    <th>Country</th>
+                    <th style="width:100px;">Points</th>
+                    <th style="width:120px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in cat_rankings %}
+                <tr>
+                    <td>
+                        <span class="rank-num {% if r.rank_position == 1 %}rank-1{% elif r.rank_position == 2 %}rank-2{% elif r.rank_position == 3 %}rank-3{% else %}rank-other{% endif %}">
+                            {{ r.rank_position }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="player-link">{{ r.first_name }} {{ r.last_name }}</span>
+                    </td>
+                    <td class="country-flag">{{ r.country or '—' }}</td>
+                    <td class="text-mono" style="font-weight:600;">{{ r.total_points }}</td>
+                    <td>
+                        <div class="points-bar">
+                            <div class="points-bar-fill" style="width: {{ (r.total_points / max_pts * 100) | int }}%"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+{% else %}
+    <div class="card" style="padding: 48px; text-align: center; color: var(--gray-400);">
+        No rankings data available for this week.
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterCategory(btn, cat) {
+    document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.ranking-group').forEach(g => {
+        g.style.display = g.dataset.category === cat ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

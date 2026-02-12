@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nice MT400 Senior 2026 - Men 60 Draw</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .filters {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .filter-group select:hover {
+            border-color: #2a5298;
+        }
+        
+        .draw-container {
+            padding: 40px;
+            overflow-x: auto;
+        }
+        
+        .bracket {
+            display: flex;
+            gap: 60px;
+            min-width: fit-content;
+        }
+        
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 40px;
+        }
+        
+        .round:first-child .match {
+            margin: 0;
+        }
+        
+        .round-title {
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #2a5298;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .match {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            min-width: 220px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        /* Spacing between matches in each round */
+        .round:nth-child(1) .match {
+            margin: 5px 0;
+        }
+        
+        .round:nth-child(2) .match {
+            margin: 90px 0;
+        }
+        
+        .round:nth-child(3) .match {
+            margin: 200px 0;
+        }
+        
+        .round:nth-child(4) .match {
+            margin: 0;
+        }
+        
+        .match:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .player {
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f3f5;
+            transition: background 0.2s;
+        }
+        
+        .player:last-child {
+            border-bottom: none;
+        }
+        
+        .player:hover {
+            background: #f8f9fa;
+        }
+        
+        .player.winner {
+            background: #d4edda;
+            font-weight: 600;
+        }
+        
+        .player.loser {
+            color: #6c757d;
+        }
+        
+        .player-name {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .score {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            margin-left: 10px;
+        }
+        
+        .seed {
+            font-size: 11px;
+            color: #6c757d;
+            margin-right: 8px;
+            min-width: 15px;
+        }
+        
+        .champion-banner {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            border-radius: 8px;
+            border: 3px solid #f0c800;
+        }
+        
+        .champion-banner h2 {
+            font-size: 24px;
+            color: #1e3c72;
+            margin-bottom: 5px;
+        }
+        
+        .champion-banner p {
+            font-size: 16px;
+            color: #2a5298;
+        }
+        
+        .bye {
+            font-style: italic;
+            color: #adb5bd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎾 Nice MT400 Senior 2026</h1>
+            <p>Men 60 Draw • January 13-18, 2026</p>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label>Year</label>
+                <select>
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Month</label>
+                <select>
+                    <option value="1" selected>January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Location</label>
+                <select>
+                    <option value="nice" selected>Nice, France</option>
+                    <option value="stockholm">Stockholm, Sweden</option>
+                    <option value="geneva">Geneva, Switzerland</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Age Category</label>
+                <select>
+                    <option value="60" selected>Men 60</option>
+                    <option value="60w">Women 60</option>
+                    <option value="65">Men 65</option>
+                    <option value="65w">Women 65</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="draw-container">
+            <div class="bracket">
+                <!-- Round 1 -->
+                <div class="round">
+                    <div class="round-title">Round 1</div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">1</span>
+                            <span class="player-name">Dieter Herrmann</span>
+                            <span class="score">6-2 6-1</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed"></span>
+                            <span class="player-name bye">Bye</span>
+                            <span class="score">—</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">8</span>
+                            <span class="player-name">Guillerm Campos</span>
+                            <span class="score">6-4 7-5</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">9</span>
+                            <span class="player-name">Sven Borg</span>
+                            <span class="score">4-6 5-7</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">5</span>
+                            <span class="player-name">Cesar Rouxinol</span>
+                            <span class="score">6-3 6-2</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">12</span>
+                            <span class="player-name">Emilio Berenguer</span>
+                            <span class="score">3-6 2-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">4</span>
+                            <span class="player-name">Matthew Kelly</span>
+                            <span class="score">6-4 6-4</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">13</span>
+                            <span class="player-name">Marcos Jimenez</span>
+                            <span class="score">4-6 4-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">3</span>
+                            <span class="player-name">Jaime Barato</span>
+                            <span class="score">7-6(3) 6-3</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">14</span>
+                            <span class="player-name">Oliver Eppel</span>
+                            <span class="score">6-7(3) 3-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">6</span>
+                            <span class="player-name">David Zaragoza</span>
+                            <span class="score">6-2 6-3</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">11</span>
+                            <span class="player-name">Alex Boppart</span>
+                            <span class="score">2-6 3-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">7</span>
+                            <span class="player-name">Gerd Adams</span>
+                            <span class="score">6-4 7-5</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">10</span>
+                            <span class="player-name">Christian Devlaminck</span>
+                            <span class="score">4-6 5-7</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">2</span>
+                            <span class="player-name">Jordi Sancho</span>
+                            <span class="score">6-3 6-2</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed"></span>
+                            <span class="player-name bye">Bye</span>
+                            <span class="score">—</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quarter Finals -->
+                <div class="round">
+                    <div class="round-title">Quarter Finals</div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">1</span>
+                            <span class="player-name">Dieter Herrmann</span>
+                            <span class="score">6-3 6-4</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">8</span>
+                            <span class="player-name">Guillerm Campos</span>
+                            <span class="score">3-6 4-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">5</span>
+                            <span class="player-name">Cesar Rouxinol</span>
+                            <span class="score">7-6(5) 6-4</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">4</span>
+                            <span class="player-name">Matthew Kelly</span>
+                            <span class="score">6-7(5) 4-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">3</span>
+                            <span class="player-name">Jaime Barato</span>
+                            <span class="score">6-2 6-3</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">6</span>
+                            <span class="player-name">David Zaragoza</span>
+                            <span class="score">2-6 3-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">2</span>
+                            <span class="player-name">Jordi Sancho</span>
+                            <span class="score">6-4 6-3</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">7</span>
+                            <span class="player-name">Gerd Adams</span>
+                            <span class="score">4-6 3-6</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Semi Finals -->
+                <div class="round">
+                    <div class="round-title">Semi Finals</div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">1</span>
+                            <span class="player-name">Dieter Herrmann</span>
+                            <span class="score">7-5 6-4</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">5</span>
+                            <span class="player-name">Cesar Rouxinol</span>
+                            <span class="score">5-7 4-6</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">2</span>
+                            <span class="player-name">Jordi Sancho</span>
+                            <span class="score">6-3 7-6(4)</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">3</span>
+                            <span class="player-name">Jaime Barato</span>
+                            <span class="score">3-6 6-7(4)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Final -->
+                <div class="round">
+                    <div class="round-title">Final</div>
+                    
+                    <div class="match">
+                        <div class="player winner">
+                            <span class="seed">1</span>
+                            <span class="player-name">Dieter Herrmann</span>
+                            <span class="score">6-4 6-2</span>
+                        </div>
+                        <div class="player loser">
+                            <span class="seed">2</span>
+                            <span class="player-name">Jordi Sancho</span>
+                            <span class="score">4-6 2-6</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="champion-banner">
+                <h2>🏆 Champion</h2>
+                <p>Dieter Herrmann</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

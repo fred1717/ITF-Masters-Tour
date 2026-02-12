@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}{{ tournament.name }} — ITF Masters Tour{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tournament-hero {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+        color: white;
+        padding: 32px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+    }
+    .tournament-hero h1 {
+        font-family: var(--font-display);
+        font-size: 30px;
+        color: white;
+        margin-bottom: 8px;
+    }
+    .hero-meta {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        font-size: 14px;
+        color: rgba(255,255,255,0.8);
+    }
+    .hero-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .hero-meta-label {
+        font-weight: 600;
+        color: var(--gold);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .section-title {
+        font-family: var(--font-display);
+        font-size: 22px;
+        color: var(--navy);
+        margin-bottom: 16px;
+        margin-top: 32px;
+    }
+    .draws-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 12px;
+    }
+    .draw-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+    }
+    .draw-info { display: flex; align-items: center; gap: 12px; }
+    .draw-category {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--navy);
+    }
+    .entries-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 50px;
+        margin-top: 12px;
+    }
+    .entry-group-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--navy);
+        padding: 12px 16px;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+    }
+    .entry-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        border-bottom: 1px solid var(--gray-100);
+        font-size: 14px;
+    }
+    .entry-row:last-child { border-bottom: none; }
+    .entry-rank {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gray-100);
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--gray-600);
+        margin-right: 10px;
+    }
+    .entry-name { font-weight: 500; flex: 1; }
+    .entry-points {
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 13px;
+        color: var(--gray-500);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tournament-hero">
+    <h1>{{ tournament.name }}</h1>
+    <div class="hero-meta">
+        <div class="hero-meta-item">
+            <span class="hero-meta-label">Dates</span>
+            {% if tournament.start_date.month == tournament.end_date.month %}
+                {{ tournament.start_date.day }} to {{ tournament.end_date.day }} {{ tournament.end_date.strftime('%B %Y') }}
+            {% else %}
+                {{ tournament.start_date.day }} {{ tournament.start_date.strftime('%B') }} to {{ tournament.end_date.day }} {{ tournament.end_date.strftime('%B %Y') }}
+            {% endif %}
+        </div>
+        <div class="hero-meta-item">
+            <span class="hero-meta-label">Week</span>
+            {{ tournament.tournament_year }}-W{{ tournament.tournament_week }}
+        </div>
+        {% if tournament.category %}
+        <div class="hero-meta-item">
+            <span class="hero-meta-label">Category</span>
+            {{ tournament.category }}
+        </div>
+        {% endif %}
+        {% if tournament.surface_name %}
+        <div class="hero-meta-item">
+            <span class="hero-meta-label">Surface</span>
+            {{ tournament.surface_name }}
+        </div>
+        {% endif %}
+        {% if tournament.venue_name %}
+        <div class="hero-meta-item">
+            <span class="hero-meta-label">Venue</span>
+            {{ tournament.venue_name }}, {{ tournament.city }}, {{ tournament.country }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- DRAWS -->
+<h2 class="section-title">Draws</h2>
+{% if draws %}
+<div class="draws-grid">
+    {% for d in draws %}
+    <div class="draw-card card">
+        <div class="draw-info">
+            <span class="draw-category">{{ d.gender_code }} {{ d.age_code }}</span>
+            <span class="badge badge-gray">{{ d.num_players }} players</span>
+            {% if d.draw_status == 'Completed' %}
+                <span class="badge badge-green">{{ d.draw_status }}</span>
+            {% elif d.draw_status == 'Generated' %}
+                <span class="badge badge-blue">{{ d.draw_status }}</span>
+            {% elif d.draw_status == 'Cancelled' %}
+                <span class="badge badge-red">{{ d.draw_status }}</span>
+            {% else %}
+                <span class="badge badge-gold">{{ d.draw_status }}</span>
+            {% endif %}
+            {% if d.has_supertiebreak %}
+                <span class="badge badge-gray">Super TB</span>
+            {% endif %}
+        </div>
+        <a href="/draw/{{ d.draw_id }}" class="btn btn-navy btn-sm">View Draw</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="padding: 32px; text-align: center; color: var(--gray-400);">
+    No draws generated yet for this tournament.
+</div>
+{% endif %}
+
+<!-- ENTRIES -->
+<h2 class="section-title">Entries</h2>
+{% if entries %}
+<div class="entries-grid">
+    {% set ns = namespace(current_group='') %}
+    {% for e in entries %}
+        {% set group_key = e.gender_code ~ ' ' ~ e.age_code %}
+        {% if group_key != ns.current_group %}
+            {% if ns.current_group != '' %}
+                </div></div>
+            {% endif %}
+            {% set ns.current_group = group_key %}
+            <div class="card">
+                <div class="entry-group-title">{{ group_key }} — {{ entries | selectattr('gender_code', 'equalto', e.gender_code) | selectattr('age_code', 'equalto', e.age_code) | list | length }} entries</div>
+                <div>
+        {% endif %}
+        <div class="entry-row">
+            <span class="entry-rank">{{ loop.index }}</span>
+            <span class="entry-name">{{ e.first_name }} {{ e.last_name }}</span>
+            <span class="entry-points">{{ e.entry_points }} pts</span>
+        </div>
+    {% endfor %}
+    {% if ns.current_group != '' %}
+        </div></div>
+    {% endif %}
+</div>
+{% else %}
+<div class="card" style="padding: 32px; text-align: center; color: var(--gray-400);">
+    No entries yet for this tournament.
+</div>
+{% endif %}
+{% endblock %}
