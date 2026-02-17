@@ -7,3 +7,5 @@ venv/
 *.log
 .vs/
 ~$*
+.terraform/
+terraform.tfvars
