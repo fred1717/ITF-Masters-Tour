@@ -110,26 +110,12 @@ data/
 docs/
     diagrams/
         itf-architecture-diagram.svg
-        ITF-ER-Diagram.html
         ITF-ER-Diagram.svg
-        ITF-ER-Diagram_Intro.html
-        ITF-ER-Diagram-Pretty.html
-        ITF-ER-Diagram-Pretty.svg
-    APPLICATION_TIER_LOGIC.md
-    ArchitectureTools.md
-    dbconnection.md
     Flask.md
     frontend.md
-    init.md
-    ITF-README-draft
-    ITF-problems.md
-    ITF-queries.md
-    ITF_README-draft.md
     repository_structure.md
     Rules.md
     script_workflow.md
-    services.md
-    TIMING_REQUIREMENTS
 
 
 evidence/

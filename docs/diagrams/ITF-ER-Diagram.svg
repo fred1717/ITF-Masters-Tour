@@ -1,244 +1,492 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1450" viewBox="0 0 1700 1450">
-<rect x="0" y="0" width="100%" height="100%" fill="white"/>
-<style><![CDATA[
-.title{font:700 22px Arial, Helvetica, sans-serif;}
-.subtitle{font:400 13px Arial, Helvetica, sans-serif; fill:#333;}
-.tname{font:700 14px Arial, Helvetica, sans-serif;}
-.field{font:12px Arial, Helvetica, sans-serif;}
-.box{fill:#ffffff;stroke:#111;stroke-width:1;}
-.header{fill:#f2f2f2;stroke:#111;stroke-width:1;}
-.line{stroke:#111;stroke-width:1.2;fill:none;}
-.dline{stroke:#555;stroke-width:1.1;fill:none;stroke-dasharray:5 4;}
-.arrow{fill:#111;}
-]]></style>
-<text x="40" y="40" class="title">ITF Masters Tour — ER Diagram (schema-derived)</text>
-<text x="40" y="64" class="subtitle">Solid = explicit FOREIGN KEY; dashed = inferred relationship from *_id columns (not enforced in schema).</text>
-<defs>
-  <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
-    <path d="M0,0 L10,4 L0,8 z" class="arrow"/>
-  </marker>
-</defs>
-<path d="M 1120 785.0 L 975.0 785.0 L 975.0 1089.0 L 830 1089.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 580 457.0 L 570.0 457.0 L 570.0 137.0 L 560 137.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 1120 1097.0 L 975.0 1097.0 L 975.0 457.0 L 830 457.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 580 809.0 L 570.0 809.0 L 570.0 457.0 L 560 457.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 580 809.0 L 570.0 809.0 L 570.0 137.0 L 560 137.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 1100 1145.0 L 1110.0 1145.0 L 1110.0 1097.0 L 1120 1097.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 850 1145.0 L 840.0 1145.0 L 840.0 1089.0 L 830 1089.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 850 1145.0 L 705.0 1145.0 L 705.0 1089.0 L 560 1089.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 1390 177.0 L 1245.0 177.0 L 1245.0 1145.0 L 1100 1145.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 1390 177.0 L 975.0 177.0 L 975.0 457.0 L 560 457.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 290 537.0 L 570.0 537.0 L 570.0 1145.0 L 850 1145.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 290 537.0 L 300.0 537.0 L 300.0 457.0 L 310 457.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 560 833.0 L 570.0 833.0 L 570.0 809.0 L 580 809.0" class="line" marker-end="url(#arrow)"/>
-<path d="M 560 833.0 L 705.0 833.0 L 705.0 1145.0 L 850 1145.0" class="line" marker-end="url(#arrow)"/>
-<path d="M 560 833.0 L 840.0 833.0 L 840.0 457.0 L 1120 457.0" class="line" marker-end="url(#arrow)"/>
-<path d="M 1390 545.0 L 1245.0 545.0 L 1245.0 457.0 L 1100 457.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 1390 545.0 L 1380.0 545.0 L 1380.0 457.0 L 1370 457.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 850 817.0 L 975.0 817.0 L 975.0 1145.0 L 1100 1145.0" class="dline" marker-end="url(#arrow)"/>
-<path d="M 1390 1129.0 L 975.0 1129.0 L 975.0 457.0 L 560 457.0" class="dline" marker-end="url(#arrow)"/>
-<rect x="40" y="90" width="250" height="126" rx="8" ry="8" class="box"/>
-<rect x="40" y="90" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="50" y="106" class="tname">AgeCategory</text>
-<text x="50" y="132" class="field">age_category_id (PK)</text>
-<text x="50" y="148" class="field">code</text>
-<text x="50" y="164" class="field">description</text>
-<text x="50" y="180" class="field">min_age</text>
-<text x="50" y="196" class="field">max_age</text>
-<rect x="310" y="90" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="310" y="90" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="320" y="106" class="tname">Country</text>
-<text x="320" y="132" class="field">country_id (PK)</text>
-<text x="320" y="148" class="field">code</text>
-<text x="320" y="164" class="field">description</text>
-<rect x="580" y="90" width="250" height="142" rx="8" ry="8" class="box"/>
-<rect x="580" y="90" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="590" y="106" class="tname">DrawPlayers</text>
-<text x="590" y="132" class="field">draw_id (PK)</text>
-<text x="590" y="148" class="field">player_id (PK)</text>
-<text x="590" y="164" class="field">draw_position</text>
-<text x="590" y="180" class="field">has_bye</text>
-<text x="590" y="196" class="field">entry_points</text>
-<text x="590" y="212" class="field">entry_timestamp</text>
-<rect x="850" y="90" width="250" height="126" rx="8" ry="8" class="box"/>
-<rect x="850" y="90" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="860" y="106" class="tname">DrawSeed</text>
-<text x="860" y="132" class="field">draw_id (PK)</text>
-<text x="860" y="148" class="field">player_id (PK)</text>
-<text x="860" y="164" class="field">seed_number</text>
-<text x="860" y="180" class="field">seeding_points</text>
-<text x="860" y="196" class="field">is_actual_seeding</text>
-<rect x="1120" y="90" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="1120" y="90" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1130" y="106" class="tname">DrawStatus</text>
-<text x="1130" y="132" class="field">status_id (PK)</text>
-<text x="1130" y="148" class="field">status_name</text>
-<text x="1130" y="164" class="field">description</text>
-<rect x="1390" y="90" width="250" height="174" rx="8" ry="8" class="box"/>
-<rect x="1390" y="90" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1400" y="106" class="tname">Draws</text>
-<text x="1400" y="132" class="field">draw_id (PK)</text>
-<text x="1400" y="148" class="field">tournament_id</text>
-<text x="1400" y="164" class="field">age_category_id</text>
-<text x="1400" y="180" class="field">gender_id</text>
-<text x="1400" y="196" class="field">draw_status_id</text>
-<text x="1400" y="212" class="field">num_players</text>
-<text x="1400" y="228" class="field">has_supertiebreak</text>
-<text x="1400" y="244" class="field">draw_generated_at</text>
-<rect x="40" y="410" width="250" height="254" rx="8" ry="8" class="box"/>
-<rect x="40" y="410" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="50" y="426" class="tname">Entries</text>
-<text x="50" y="452" class="field">entry_id (PK)</text>
-<text x="50" y="468" class="field">player_id</text>
-<text x="50" y="484" class="field">tournament_id</text>
-<text x="50" y="500" class="field">age_category_id</text>
-<text x="50" y="516" class="field">gender_id</text>
-<text x="50" y="532" class="field">entry_points</text>
-<text x="50" y="548" class="field">entry_timestamp</text>
-<text x="50" y="564" class="field">withdrawn_at</text>
-<text x="50" y="580" class="field">withdrawal_type</text>
-<text x="50" y="596" class="field">(withdrawn_at</text>
-<text x="50" y="612" class="field">OR</text>
-<text x="50" y="628" class="field">(withdrawn_at</text>
-<text x="50" y="644" class="field">)</text>
-<rect x="310" y="410" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="310" y="410" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="320" y="426" class="tname">Gender</text>
-<text x="320" y="452" class="field">gender_id (PK)</text>
-<text x="320" y="468" class="field">code</text>
-<text x="320" y="484" class="field">description</text>
-<rect x="580" y="410" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="580" y="410" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="590" y="426" class="tname">Location</text>
-<text x="590" y="452" class="field">location_id (PK)</text>
-<text x="590" y="468" class="field">country_id</text>
-<text x="590" y="484" class="field">city</text>
-<rect x="850" y="410" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="850" y="410" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="860" y="426" class="tname">MatchRounds</text>
-<text x="860" y="452" class="field">round_id (PK)</text>
-<text x="860" y="468" class="field">code</text>
-<text x="860" y="484" class="field">label</text>
-<rect x="1120" y="410" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="1120" y="410" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1130" y="426" class="tname">MatchStatus</text>
-<text x="1130" y="452" class="field">match_status_id (PK)</text>
-<text x="1130" y="468" class="field">code</text>
-<text x="1130" y="484" class="field">description</text>
-<rect x="1390" y="410" width="250" height="270" rx="8" ry="8" class="box"/>
-<rect x="1390" y="410" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1400" y="426" class="tname">Matches</text>
-<text x="1400" y="452" class="field">match_id (PK)</text>
-<text x="1400" y="468" class="field">draw_id</text>
-<text x="1400" y="484" class="field">round_id</text>
-<text x="1400" y="500" class="field">player1_id</text>
-<text x="1400" y="516" class="field">player2_id</text>
-<text x="1400" y="532" class="field">match_number</text>
-<text x="1400" y="548" class="field">match_date</text>
-<text x="1400" y="564" class="field">winner_id</text>
-<text x="1400" y="580" class="field">match_status_id</text>
-<text x="1400" y="596" class="field">set1_player1</text>
-<text x="1400" y="612" class="field">set1_player2</text>
-<text x="1400" y="628" class="field">set1_tiebreak_player1</text>
-<text x="1400" y="644" class="field">set1_tiebreak_player2</text>
-<text x="1400" y="660" class="field">set2_player1</text>
-<text x="1400" y="676" class="field">…</text>
-<rect x="40" y="730" width="250" height="78" rx="8" ry="8" class="box"/>
-<rect x="40" y="730" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="50" y="746" class="tname">PlayerStatus</text>
-<text x="50" y="772" class="field">status_id (PK)</text>
-<text x="50" y="788" class="field">status_description</text>
-<rect x="310" y="730" width="250" height="206" rx="8" ry="8" class="box"/>
-<rect x="310" y="730" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="320" y="746" class="tname">PlayerSuspensions</text>
-<text x="320" y="772" class="field">suspension_id (PK)</text>
-<text x="320" y="788" class="field">player_id</text>
-<text x="320" y="804" class="field">tournament_id</text>
-<text x="320" y="820" class="field">reason_match_status_id</text>
-<text x="320" y="836" class="field">suspension_start</text>
-<text x="320" y="852" class="field">suspension_end</text>
-<text x="320" y="868" class="field">created_at</text>
-<text x="320" y="884" class="field">REFERENCES</text>
-<text x="320" y="900" class="field">REFERENCES</text>
-<text x="320" y="916" class="field">REFERENCES</text>
-<rect x="580" y="730" width="250" height="158" rx="8" ry="8" class="box"/>
-<rect x="580" y="730" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="590" y="746" class="tname">Players</text>
-<text x="590" y="772" class="field">player_id (PK)</text>
-<text x="590" y="788" class="field">gender_id</text>
-<text x="590" y="804" class="field">country_id</text>
-<text x="590" y="820" class="field">status_id</text>
-<text x="590" y="836" class="field">first_name</text>
-<text x="590" y="852" class="field">last_name</text>
-<text x="590" y="868" class="field">birth_year</text>
-<rect x="850" y="730" width="250" height="174" rx="8" ry="8" class="box"/>
-<rect x="850" y="730" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="860" y="746" class="tname">PointsHistory</text>
-<text x="860" y="772" class="field">id (PK)</text>
-<text x="860" y="788" class="field">player_id</text>
-<text x="860" y="804" class="field">tournament_id</text>
-<text x="860" y="820" class="field">age_category_id</text>
-<text x="860" y="836" class="field">stage_result_id</text>
-<text x="860" y="852" class="field">points_earned</text>
-<text x="860" y="868" class="field">tournament_end_date</text>
-<text x="860" y="884" class="field">created_at</text>
-<rect x="1120" y="730" width="250" height="110" rx="8" ry="8" class="box"/>
-<rect x="1120" y="730" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1130" y="746" class="tname">PointsRules</text>
-<text x="1130" y="772" class="field">points_id (PK)</text>
-<text x="1130" y="788" class="field">category_id</text>
-<text x="1130" y="804" class="field">stage_result_id</text>
-<text x="1130" y="820" class="field">points</text>
-<rect x="1390" y="730" width="250" height="110" rx="8" ry="8" class="box"/>
-<rect x="1390" y="730" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1400" y="746" class="tname">SeedingRules</text>
-<text x="1400" y="772" class="field">id (PK)</text>
-<text x="1400" y="788" class="field">min_players</text>
-<text x="1400" y="804" class="field">max_players</text>
-<text x="1400" y="820" class="field">num_seeds</text>
-<rect x="40" y="1050" width="250" height="110" rx="8" ry="8" class="box"/>
-<rect x="40" y="1050" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="50" y="1066" class="tname">StageResults</text>
-<text x="50" y="1092" class="field">id (PK)</text>
-<text x="50" y="1108" class="field">code</text>
-<text x="50" y="1124" class="field">description</text>
-<text x="50" y="1140" class="field">display_order</text>
-<rect x="310" y="1050" width="250" height="78" rx="8" ry="8" class="box"/>
-<rect x="310" y="1050" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="320" y="1066" class="tname">Surfaces</text>
-<text x="320" y="1092" class="field">surface_id (PK)</text>
-<text x="320" y="1108" class="field">surface_name</text>
-<rect x="580" y="1050" width="250" height="78" rx="8" ry="8" class="box"/>
-<rect x="580" y="1050" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="590" y="1066" class="tname">TournamentCategory</text>
-<text x="590" y="1092" class="field">category_id (PK)</text>
-<text x="590" y="1108" class="field">description</text>
-<rect x="850" y="1050" width="250" height="190" rx="8" ry="8" class="box"/>
-<rect x="850" y="1050" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="860" y="1066" class="tname">Tournaments</text>
-<text x="860" y="1092" class="field">tournament_id (PK)</text>
-<text x="860" y="1108" class="field">name</text>
-<text x="860" y="1124" class="field">start_date</text>
-<text x="860" y="1140" class="field">end_date</text>
-<text x="860" y="1156" class="field">tournament_year</text>
-<text x="860" y="1172" class="field">tournament_week</text>
-<text x="860" y="1188" class="field">venue_id</text>
-<text x="860" y="1204" class="field">category_id</text>
-<text x="860" y="1220" class="field">surface_id</text>
-<rect x="1120" y="1050" width="250" height="94" rx="8" ry="8" class="box"/>
-<rect x="1120" y="1050" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1130" y="1066" class="tname">Venue</text>
-<text x="1130" y="1092" class="field">venue_id (PK)</text>
-<text x="1130" y="1108" class="field">location_id</text>
-<text x="1130" y="1124" class="field">venue_name</text>
-<rect x="1390" y="1050" width="250" height="158" rx="8" ry="8" class="box"/>
-<rect x="1390" y="1050" width="250" height="24" rx="8" ry="8" class="header"/>
-<text x="1400" y="1066" class="tname">WeeklyRanking</text>
-<text x="1400" y="1092" class="field">player_id (PK)</text>
-<text x="1400" y="1108" class="field">age_category_id (PK)</text>
-<text x="1400" y="1124" class="field">gender_id</text>
-<text x="1400" y="1140" class="field">ranking_year (PK)</text>
-<text x="1400" y="1156" class="field">ranking_week (PK)</text>
-<text x="1400" y="1172" class="field">total_points</text>
-<text x="1400" y="1188" class="field">rank_position</text>
+<svg width="1720" height="1180" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<defs><style>
+.col-text { font-size: 10.5px; fill: #37474f; }
+.pk-label { font-size: 8.5px; font-weight: 700; fill: #bf8c00; }
+.fk-label { font-size: 8.5px; font-weight: 700; fill: #78909c; }
+.hdr-text { font-size: 11.5px; font-weight: 700; }
+.title-text { font-size: 20px; font-weight: 700; fill: #212529; }
+.subtitle-text { font-size: 12px; fill: #6c757d; }
+.legend-title { font-size: 11px; font-weight: 700; fill: #212529; }
+.legend-text { font-size: 10px; fill: #495057; }
+.fk-line { fill: none; stroke: #bdbdbd; stroke-width: 1; }
+.fk-dot { fill: #bdbdbd; }
+</style></defs>
+<rect width="1720" height="1180" fill="#fafafa"/>
+<text x="860" y="30" text-anchor="middle" class="title-text">ITF Masters Tour — Entity-Relationship Diagram</text>
+<text x="860" y="50" text-anchor="middle" class="subtitle-text">24 Tables · PostgreSQL 16 · 15 Prerequisite + 8 Generated + 1 Schema</text>
+<line x1="20" y1="68" x2="1145" y2="68" stroke="#cfd8dc" stroke-width="0.5"/>
+<text x="1160" y="100" class="legend-text" style="font-weight:600; fill:#78909c;">REFERENCE</text>
+<text x="1160" y="114" class="legend-text" style="fill:#78909c;">12 lookup tables</text>
+<text x="1160" y="225" class="legend-text" style="font-weight:600; fill:#43a047;">LOCATION</text>
+<text x="1160" y="239" class="legend-text" style="fill:#43a047;">2 tables</text>
+<text x="1160" y="365" class="legend-text" style="font-weight:600; fill:#1565c0;">CORE ENTITIES</text>
+<text x="1160" y="379" class="legend-text" style="fill:#1565c0;">2 tables</text>
+<text x="1160" y="555" class="legend-text" style="font-weight:600; fill:#ef6c00;">DRAW &amp; ENTRY</text>
+<text x="1160" y="569" class="legend-text" style="fill:#ef6c00;">4 tables</text>
+<text x="1160" y="785" class="legend-text" style="font-weight:600; fill:#7b1fa2;">MATCH &amp; RESULTS</text>
+<text x="1160" y="799" class="legend-text" style="fill:#7b1fa2;">4 tables</text>
+<path d="M 195 384 C 195 251, 205 251, 205 118" class="fk-line"/>
+<circle cx="195" cy="384" r="2.5" class="fk-dot"/>
+<circle cx="205" cy="118" r="2.5" class="fk-dot"/>
+<line x1="210" y1="384" x2="195" y2="384" class="fk-line"/>
+<circle cx="210" cy="384" r="2.5" class="fk-dot"/>
+<circle cx="195" cy="384" r="2.5" class="fk-dot"/>
+<path d="M 440 414 C 440 266, 190 266, 190 118" class="fk-line"/>
+<circle cx="440" cy="414" r="2.5" class="fk-dot"/>
+<circle cx="190" cy="118" r="2.5" class="fk-dot"/>
+<path d="M 440 414 C 440 266, 370 266, 370 118" class="fk-line"/>
+<circle cx="440" cy="414" r="2.5" class="fk-dot"/>
+<circle cx="370" cy="118" r="2.5" class="fk-dot"/>
+<path d="M 540 345 C 540 244, 663 244, 663 142" class="fk-line"/>
+<circle cx="540" cy="345" r="2.5" class="fk-dot"/>
+<circle cx="663" cy="142" r="2.5" class="fk-dot"/>
+<path d="M 670 428 C 529 428, 529 384, 388 384" class="fk-line"/>
+<circle cx="670" cy="428" r="2.5" class="fk-dot"/>
+<circle cx="388" cy="384" r="2.5" class="fk-dot"/>
+<path d="M 670 428 C 532 428, 532 236, 395 236" class="fk-line"/>
+<circle cx="670" cy="428" r="2.5" class="fk-dot"/>
+<circle cx="395" cy="236" r="2.5" class="fk-dot"/>
+<path d="M 670 428 C 430 428, 430 236, 190 236" class="fk-line"/>
+<circle cx="670" cy="428" r="2.5" class="fk-dot"/>
+<circle cx="190" cy="236" r="2.5" class="fk-dot"/>
+<path d="M 640 616 C 640 522, 670 522, 670 428" class="fk-line"/>
+<circle cx="640" cy="616" r="2.5" class="fk-dot"/>
+<circle cx="670" cy="428" r="2.5" class="fk-dot"/>
+<path d="M 540 540 C 540 364, 474 364, 474 187" class="fk-line"/>
+<circle cx="540" cy="540" r="2.5" class="fk-dot"/>
+<circle cx="474" cy="187" r="2.5" class="fk-dot"/>
+<path d="M 440 616 C 440 367, 190 367, 190 118" class="fk-line"/>
+<circle cx="440" cy="616" r="2.5" class="fk-dot"/>
+<circle cx="190" cy="118" r="2.5" class="fk-dot"/>
+<path d="M 640 616 C 640 367, 956 367, 956 118" class="fk-line"/>
+<circle cx="640" cy="616" r="2.5" class="fk-dot"/>
+<circle cx="956" cy="118" r="2.5" class="fk-dot"/>
+<path d="M 670 624 C 670 518, 640 518, 640 414" class="fk-line"/>
+<circle cx="670" cy="624" r="2.5" class="fk-dot"/>
+<circle cx="640" cy="414" r="2.5" class="fk-dot"/>
+<line x1="770" y1="540" x2="770" y2="512" class="fk-line"/>
+<circle cx="770" cy="540" r="2.5" class="fk-dot"/>
+<circle cx="770" cy="512" r="2.5" class="fk-dot"/>
+<path d="M 930 406 C 785 406, 785 616, 640 616" class="fk-line"/>
+<circle cx="930" cy="406" r="2.5" class="fk-dot"/>
+<circle cx="640" cy="616" r="2.5" class="fk-dot"/>
+<path d="M 930 406 C 785 406, 785 414, 640 414" class="fk-line"/>
+<circle cx="930" cy="406" r="2.5" class="fk-dot"/>
+<circle cx="640" cy="414" r="2.5" class="fk-dot"/>
+<path d="M 930 538 C 785 538, 785 616, 640 616" class="fk-line"/>
+<circle cx="930" cy="538" r="2.5" class="fk-dot"/>
+<circle cx="640" cy="616" r="2.5" class="fk-dot"/>
+<path d="M 930 538 C 785 538, 785 414, 640 414" class="fk-line"/>
+<circle cx="930" cy="538" r="2.5" class="fk-dot"/>
+<circle cx="640" cy="414" r="2.5" class="fk-dot"/>
+<path d="M 1200 534 C 920 534, 920 616, 640 616" class="fk-line"/>
+<circle cx="1200" cy="534" r="2.5" class="fk-dot"/>
+<circle cx="640" cy="616" r="2.5" class="fk-dot"/>
+<path d="M 1314 345 C 1000 345, 1000 282, 686 282" class="fk-line"/>
+<circle cx="1314" cy="345" r="2.5" class="fk-dot"/>
+<circle cx="686" cy="282" r="2.5" class="fk-dot"/>
+<path d="M 1314 345 C 1083 345, 1083 157, 852 157" class="fk-line"/>
+<circle cx="1314" cy="345" r="2.5" class="fk-dot"/>
+<circle cx="852" cy="157" r="2.5" class="fk-dot"/>
+<path d="M 235 838 C 235 626, 440 626, 440 414" class="fk-line"/>
+<circle cx="235" cy="838" r="2.5" class="fk-dot"/>
+<circle cx="440" cy="414" r="2.5" class="fk-dot"/>
+<path d="M 235 838 C 452 838, 452 428, 670 428" class="fk-line"/>
+<circle cx="235" cy="838" r="2.5" class="fk-dot"/>
+<circle cx="670" cy="428" r="2.5" class="fk-dot"/>
+<path d="M 235 838 C 235 478, 763 478, 763 118" class="fk-line"/>
+<circle cx="235" cy="838" r="2.5" class="fk-dot"/>
+<circle cx="763" cy="118" r="2.5" class="fk-dot"/>
+<path d="M 375 770 C 375 626, 540 626, 540 482" class="fk-line"/>
+<circle cx="375" cy="770" r="2.5" class="fk-dot"/>
+<circle cx="540" cy="482" r="2.5" class="fk-dot"/>
+<path d="M 480 846 C 480 637, 670 637, 670 428" class="fk-line"/>
+<circle cx="480" cy="846" r="2.5" class="fk-dot"/>
+<circle cx="670" cy="428" r="2.5" class="fk-dot"/>
+<path d="M 375 770 C 375 478, 474 478, 474 187" class="fk-line"/>
+<circle cx="375" cy="770" r="2.5" class="fk-dot"/>
+<circle cx="474" cy="187" r="2.5" class="fk-dot"/>
+<path d="M 375 770 C 375 534, 499 534, 499 297" class="fk-line"/>
+<circle cx="375" cy="770" r="2.5" class="fk-dot"/>
+<circle cx="499" cy="297" r="2.5" class="fk-dot"/>
+<path d="M 620 770 C 620 626, 540 626, 540 482" class="fk-line"/>
+<circle cx="620" cy="770" r="2.5" class="fk-dot"/>
+<circle cx="540" cy="482" r="2.5" class="fk-dot"/>
+<path d="M 620 770 C 620 478, 474 478, 474 187" class="fk-line"/>
+<circle cx="620" cy="770" r="2.5" class="fk-dot"/>
+<circle cx="474" cy="187" r="2.5" class="fk-dot"/>
+<path d="M 515 838 C 515 478, 190 478, 190 118" class="fk-line"/>
+<circle cx="515" cy="838" r="2.5" class="fk-dot"/>
+<circle cx="190" cy="118" r="2.5" class="fk-dot"/>
+<path d="M 976 251 C 686 251, 686 236, 395 236" class="fk-line"/>
+<circle cx="976" cy="251" r="2.5" class="fk-dot"/>
+<circle cx="395" cy="236" r="2.5" class="fk-dot"/>
+<line x1="976" y1="251" x2="588" y2="251" class="fk-line"/>
+<circle cx="976" cy="251" r="2.5" class="fk-dot"/>
+<circle cx="588" cy="251" r="2.5" class="fk-dot"/>
+<rect x="27" y="82" width="165" height="77" rx="4" fill="#00000010"/>
+<rect x="25" y="80" width="165" height="77" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="25" y="80" width="165" height="26" rx="4" fill="#78909c"/>
+<rect x="25" y="102" width="165" height="4" fill="#78909c"/>
+<text x="107.5" y="97" text-anchor="middle" class="hdr-text" fill="#fff">Gender</text>
+<text x="33" y="118" class="pk-label">PK</text>
+<text x="51" y="118" class="col-text">gender_id</text>
+<text x="51" y="133" class="col-text">code</text>
+<text x="51" y="148" class="col-text">description</text>
+<line x1="25" y1="106" x2="190" y2="106" stroke="#78909c" stroke-width="0.5"/>
+<rect x="207" y="82" width="165" height="77" rx="4" fill="#00000010"/>
+<rect x="205" y="80" width="165" height="77" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="205" y="80" width="165" height="26" rx="4" fill="#78909c"/>
+<rect x="205" y="102" width="165" height="4" fill="#78909c"/>
+<text x="287.5" y="97" text-anchor="middle" class="hdr-text" fill="#fff">Country</text>
+<text x="213" y="118" class="pk-label">PK</text>
+<text x="231" y="118" class="col-text">country_id</text>
+<text x="231" y="133" class="col-text">code</text>
+<text x="231" y="148" class="col-text">description</text>
+<line x1="205" y1="106" x2="370" y2="106" stroke="#78909c" stroke-width="0.5"/>
+<rect x="387" y="82" width="178" height="107" rx="4" fill="#00000010"/>
+<rect x="385" y="80" width="178" height="107" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="385" y="80" width="178" height="26" rx="4" fill="#78909c"/>
+<rect x="385" y="102" width="178" height="4" fill="#78909c"/>
+<text x="474.0" y="97" text-anchor="middle" class="hdr-text" fill="#fff">AgeCategory</text>
+<text x="393" y="118" class="pk-label">PK</text>
+<text x="411" y="118" class="col-text">age_category_id</text>
+<text x="411" y="133" class="col-text">code</text>
+<text x="411" y="148" class="col-text">description</text>
+<text x="411" y="163" class="col-text">min_age</text>
+<text x="411" y="178" class="col-text">max_age</text>
+<line x1="385" y1="106" x2="563" y2="106" stroke="#78909c" stroke-width="0.5"/>
+<rect x="580" y="82" width="170" height="62" rx="4" fill="#00000010"/>
+<rect x="578" y="80" width="170" height="62" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="578" y="80" width="170" height="26" rx="4" fill="#78909c"/>
+<rect x="578" y="102" width="170" height="4" fill="#78909c"/>
+<text x="663.0" y="97" text-anchor="middle" class="hdr-text" fill="#fff">PlayerStatus</text>
+<text x="586" y="118" class="pk-label">PK</text>
+<text x="604" y="118" class="col-text">status_id</text>
+<text x="604" y="133" class="col-text">status_description</text>
+<line x1="578" y1="106" x2="748" y2="106" stroke="#78909c" stroke-width="0.5"/>
+<rect x="765" y="82" width="178" height="77" rx="4" fill="#00000010"/>
+<rect x="763" y="80" width="178" height="77" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="763" y="80" width="178" height="26" rx="4" fill="#78909c"/>
+<rect x="763" y="102" width="178" height="4" fill="#78909c"/>
+<text x="852.0" y="97" text-anchor="middle" class="hdr-text" fill="#fff">MatchStatus</text>
+<text x="771" y="118" class="pk-label">PK</text>
+<text x="789" y="118" class="col-text">match_status_id</text>
+<text x="789" y="133" class="col-text">code</text>
+<text x="789" y="148" class="col-text">description</text>
+<line x1="763" y1="106" x2="941" y2="106" stroke="#78909c" stroke-width="0.5"/>
+<rect x="958" y="82" width="178" height="77" rx="4" fill="#00000010"/>
+<rect x="956" y="80" width="178" height="77" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="956" y="80" width="178" height="26" rx="4" fill="#78909c"/>
+<rect x="956" y="102" width="178" height="4" fill="#78909c"/>
+<text x="1045.0" y="97" text-anchor="middle" class="hdr-text" fill="#fff">DrawStatus</text>
+<text x="964" y="118" class="pk-label">PK</text>
+<text x="982" y="118" class="col-text">status_id</text>
+<text x="982" y="133" class="col-text">status_name</text>
+<text x="982" y="148" class="col-text">description</text>
+<line x1="956" y1="106" x2="1134" y2="106" stroke="#78909c" stroke-width="0.5"/>
+<rect x="27" y="207" width="165" height="62" rx="4" fill="#00000010"/>
+<rect x="25" y="205" width="165" height="62" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="25" y="205" width="165" height="26" rx="4" fill="#78909c"/>
+<rect x="25" y="227" width="165" height="4" fill="#78909c"/>
+<text x="107.5" y="222" text-anchor="middle" class="hdr-text" fill="#fff">Surfaces</text>
+<text x="33" y="243" class="pk-label">PK</text>
+<text x="51" y="243" class="col-text">surface_id</text>
+<text x="51" y="258" class="col-text">surface_name</text>
+<line x1="25" y1="231" x2="190" y2="231" stroke="#78909c" stroke-width="0.5"/>
+<rect x="207" y="207" width="190" height="62" rx="4" fill="#00000010"/>
+<rect x="205" y="205" width="190" height="62" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="205" y="205" width="190" height="26" rx="4" fill="#78909c"/>
+<rect x="205" y="227" width="190" height="4" fill="#78909c"/>
+<text x="300.0" y="222" text-anchor="middle" class="hdr-text" fill="#fff">TournamentCategory</text>
+<text x="213" y="243" class="pk-label">PK</text>
+<text x="231" y="243" class="col-text">category_id</text>
+<text x="231" y="258" class="col-text">description</text>
+<line x1="205" y1="231" x2="395" y2="231" stroke="#78909c" stroke-width="0.5"/>
+<rect x="412" y="207" width="178" height="92" rx="4" fill="#00000010"/>
+<rect x="410" y="205" width="178" height="92" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="410" y="205" width="178" height="26" rx="4" fill="#78909c"/>
+<rect x="410" y="227" width="178" height="4" fill="#78909c"/>
+<text x="499.0" y="222" text-anchor="middle" class="hdr-text" fill="#fff">StageResults</text>
+<text x="418" y="243" class="pk-label">PK</text>
+<text x="436" y="243" class="col-text">id</text>
+<text x="436" y="258" class="col-text">code</text>
+<text x="436" y="273" class="col-text">description</text>
+<text x="436" y="288" class="col-text">display_order</text>
+<line x1="410" y1="231" x2="588" y2="231" stroke="#78909c" stroke-width="0.5"/>
+<rect x="605" y="207" width="165" height="77" rx="4" fill="#00000010"/>
+<rect x="603" y="205" width="165" height="77" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="603" y="205" width="165" height="26" rx="4" fill="#78909c"/>
+<rect x="603" y="227" width="165" height="4" fill="#78909c"/>
+<text x="685.5" y="222" text-anchor="middle" class="hdr-text" fill="#fff">MatchRounds</text>
+<text x="611" y="243" class="pk-label">PK</text>
+<text x="629" y="243" class="col-text">round_id</text>
+<text x="629" y="258" class="col-text">code</text>
+<text x="629" y="273" class="col-text">label</text>
+<line x1="603" y1="231" x2="768" y2="231" stroke="#78909c" stroke-width="0.5"/>
+<rect x="785" y="207" width="178" height="92" rx="4" fill="#00000010"/>
+<rect x="783" y="205" width="178" height="92" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="783" y="205" width="178" height="26" rx="4" fill="#78909c"/>
+<rect x="783" y="227" width="178" height="4" fill="#78909c"/>
+<text x="872.0" y="222" text-anchor="middle" class="hdr-text" fill="#fff">SeedingRules</text>
+<text x="791" y="243" class="pk-label">PK</text>
+<text x="809" y="243" class="col-text">id</text>
+<text x="809" y="258" class="col-text">min_players</text>
+<text x="809" y="273" class="col-text">max_players</text>
+<text x="809" y="288" class="col-text">num_seeds</text>
+<line x1="783" y1="231" x2="961" y2="231" stroke="#78909c" stroke-width="0.5"/>
+<rect x="978" y="207" width="178" height="92" rx="4" fill="#00000010"/>
+<rect x="976" y="205" width="178" height="92" rx="4" fill="#eceff1" stroke="#78909c" stroke-width="1.2"/>
+<rect x="976" y="205" width="178" height="26" rx="4" fill="#78909c"/>
+<rect x="976" y="227" width="178" height="4" fill="#78909c"/>
+<text x="1065.0" y="222" text-anchor="middle" class="hdr-text" fill="#fff">PointsRules</text>
+<text x="984" y="243" class="pk-label">PK</text>
+<text x="1002" y="243" class="col-text">points_id</text>
+<text x="984" y="258" class="fk-label">FK</text>
+<text x="1002" y="258" class="col-text">category_id</text>
+<text x="984" y="273" class="fk-label">FK</text>
+<text x="1002" y="273" class="col-text">stage_result_id</text>
+<text x="1002" y="288" class="col-text">points</text>
+<line x1="976" y1="231" x2="1154" y2="231" stroke="#78909c" stroke-width="0.5"/>
+<rect x="27" y="347" width="170" height="77" rx="4" fill="#00000010"/>
+<rect x="25" y="345" width="170" height="77" rx="4" fill="#e8f5e9" stroke="#43a047" stroke-width="1.2"/>
+<rect x="25" y="345" width="170" height="26" rx="4" fill="#43a047"/>
+<rect x="25" y="367" width="170" height="4" fill="#43a047"/>
+<text x="110.0" y="362" text-anchor="middle" class="hdr-text" fill="#fff">Location</text>
+<text x="33" y="383" class="pk-label">PK</text>
+<text x="51" y="383" class="col-text">location_id</text>
+<text x="33" y="398" class="fk-label">FK</text>
+<text x="51" y="398" class="col-text">country_id</text>
+<text x="51" y="413" class="col-text">city</text>
+<line x1="25" y1="371" x2="195" y2="371" stroke="#43a047" stroke-width="0.5"/>
+<rect x="212" y="347" width="178" height="77" rx="4" fill="#00000010"/>
+<rect x="210" y="345" width="178" height="77" rx="4" fill="#e8f5e9" stroke="#43a047" stroke-width="1.2"/>
+<rect x="210" y="345" width="178" height="26" rx="4" fill="#43a047"/>
+<rect x="210" y="367" width="178" height="4" fill="#43a047"/>
+<text x="299.0" y="362" text-anchor="middle" class="hdr-text" fill="#fff">Venue</text>
+<text x="218" y="383" class="pk-label">PK</text>
+<text x="236" y="383" class="col-text">venue_id</text>
+<text x="218" y="398" class="fk-label">FK</text>
+<text x="236" y="398" class="col-text">location_id</text>
+<text x="236" y="413" class="col-text">venue_name</text>
+<line x1="210" y1="371" x2="388" y2="371" stroke="#43a047" stroke-width="0.5"/>
+<rect x="442" y="347" width="200" height="137" rx="4" fill="#00000010"/>
+<rect x="440" y="345" width="200" height="137" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.2"/>
+<rect x="440" y="345" width="200" height="26" rx="4" fill="#1565c0"/>
+<rect x="440" y="367" width="200" height="4" fill="#1565c0"/>
+<text x="540.0" y="362" text-anchor="middle" class="hdr-text" fill="#fff">Players</text>
+<text x="448" y="383" class="pk-label">PK</text>
+<text x="466" y="383" class="col-text">player_id</text>
+<text x="448" y="398" class="fk-label">FK</text>
+<text x="466" y="398" class="col-text">gender_id</text>
+<text x="448" y="413" class="fk-label">FK</text>
+<text x="466" y="413" class="col-text">country_id</text>
+<text x="448" y="428" class="fk-label">FK</text>
+<text x="466" y="428" class="col-text">status_id</text>
+<text x="466" y="443" class="col-text">first_name</text>
+<text x="466" y="458" class="col-text">last_name</text>
+<text x="466" y="473" class="col-text">birth_year</text>
+<line x1="440" y1="371" x2="640" y2="371" stroke="#1565c0" stroke-width="0.5"/>
+<rect x="672" y="347" width="200" height="167" rx="4" fill="#00000010"/>
+<rect x="670" y="345" width="200" height="167" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.2"/>
+<rect x="670" y="345" width="200" height="26" rx="4" fill="#1565c0"/>
+<rect x="670" y="367" width="200" height="4" fill="#1565c0"/>
+<text x="770.0" y="362" text-anchor="middle" class="hdr-text" fill="#fff">Tournaments</text>
+<text x="678" y="383" class="pk-label">PK</text>
+<text x="696" y="383" class="col-text">tournament_id</text>
+<text x="696" y="398" class="col-text">name</text>
+<text x="696" y="413" class="col-text">start_date</text>
+<text x="696" y="428" class="col-text">end_date</text>
+<text x="696" y="443" class="col-text">tournament_year</text>
+<text x="696" y="458" class="col-text">tournament_week</text>
+<text x="678" y="473" class="fk-label">FK</text>
+<text x="696" y="473" class="col-text">venue_id</text>
+<text x="678" y="488" class="fk-label">FK</text>
+<text x="696" y="488" class="col-text">category_id</text>
+<text x="678" y="503" class="fk-label">FK</text>
+<text x="696" y="503" class="col-text">surface_id</text>
+<line x1="670" y1="371" x2="870" y2="371" stroke="#1565c0" stroke-width="0.5"/>
+<rect x="442" y="542" width="200" height="152" rx="4" fill="#00000010"/>
+<rect x="440" y="540" width="200" height="152" rx="4" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.2"/>
+<rect x="440" y="540" width="200" height="26" rx="4" fill="#ef6c00"/>
+<rect x="440" y="562" width="200" height="4" fill="#ef6c00"/>
+<text x="540.0" y="557" text-anchor="middle" class="hdr-text" fill="#fff">Draws</text>
+<text x="448" y="578" class="pk-label">PK</text>
+<text x="466" y="578" class="col-text">draw_id</text>
+<text x="448" y="593" class="fk-label">FK</text>
+<text x="466" y="593" class="col-text">tournament_id</text>
+<text x="448" y="608" class="fk-label">FK</text>
+<text x="466" y="608" class="col-text">age_category_id</text>
+<text x="448" y="623" class="fk-label">FK</text>
+<text x="466" y="623" class="col-text">gender_id</text>
+<text x="448" y="638" class="fk-label">FK</text>
+<text x="466" y="638" class="col-text">draw_status_id</text>
+<text x="466" y="653" class="col-text">num_players</text>
+<text x="466" y="668" class="col-text">has_supertiebreak</text>
+<text x="466" y="683" class="col-text">draw_generated_at</text>
+<line x1="440" y1="566" x2="640" y2="566" stroke="#ef6c00" stroke-width="0.5"/>
+<rect x="672" y="542" width="200" height="167" rx="4" fill="#00000010"/>
+<rect x="670" y="540" width="200" height="167" rx="4" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.2"/>
+<rect x="670" y="540" width="200" height="26" rx="4" fill="#ef6c00"/>
+<rect x="670" y="562" width="200" height="4" fill="#ef6c00"/>
+<text x="770.0" y="557" text-anchor="middle" class="hdr-text" fill="#fff">Entries</text>
+<text x="678" y="578" class="pk-label">PK</text>
+<text x="696" y="578" class="col-text">entry_id</text>
+<text x="678" y="593" class="fk-label">FK</text>
+<text x="696" y="593" class="col-text">player_id</text>
+<text x="678" y="608" class="fk-label">FK</text>
+<text x="696" y="608" class="col-text">tournament_id</text>
+<text x="678" y="623" class="fk-label">FK</text>
+<text x="696" y="623" class="col-text">age_category_id</text>
+<text x="678" y="638" class="fk-label">FK</text>
+<text x="696" y="638" class="col-text">gender_id</text>
+<text x="696" y="653" class="col-text">entry_points</text>
+<text x="696" y="668" class="col-text">entry_timestamp</text>
+<text x="696" y="683" class="col-text">withdrawn_at</text>
+<text x="696" y="698" class="col-text">withdrawal_type</text>
+<line x1="670" y1="566" x2="870" y2="566" stroke="#ef6c00" stroke-width="0.5"/>
+<rect x="932" y="347" width="200" height="122" rx="4" fill="#00000010"/>
+<rect x="930" y="345" width="200" height="122" rx="4" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.2"/>
+<rect x="930" y="345" width="200" height="26" rx="4" fill="#ef6c00"/>
+<rect x="930" y="367" width="200" height="4" fill="#ef6c00"/>
+<text x="1030.0" y="362" text-anchor="middle" class="hdr-text" fill="#fff">DrawPlayers</text>
+<text x="938" y="383" class="pk-label">PK</text>
+<text x="956" y="383" class="fk-label">FK</text>
+<text x="974" y="383" class="col-text">draw_id</text>
+<text x="938" y="398" class="pk-label">PK</text>
+<text x="956" y="398" class="fk-label">FK</text>
+<text x="974" y="398" class="col-text">player_id</text>
+<text x="956" y="413" class="col-text">draw_position</text>
+<text x="956" y="428" class="col-text">has_bye</text>
+<text x="956" y="443" class="col-text">entry_points</text>
+<text x="956" y="458" class="col-text">entry_timestamp</text>
+<line x1="930" y1="371" x2="1130" y2="371" stroke="#ef6c00" stroke-width="0.5"/>
+<rect x="932" y="487" width="200" height="107" rx="4" fill="#00000010"/>
+<rect x="930" y="485" width="200" height="107" rx="4" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.2"/>
+<rect x="930" y="485" width="200" height="26" rx="4" fill="#ef6c00"/>
+<rect x="930" y="507" width="200" height="4" fill="#ef6c00"/>
+<text x="1030.0" y="502" text-anchor="middle" class="hdr-text" fill="#fff">DrawSeed</text>
+<text x="938" y="523" class="pk-label">PK</text>
+<text x="956" y="523" class="fk-label">FK</text>
+<text x="974" y="523" class="col-text">draw_id</text>
+<text x="938" y="538" class="pk-label">PK</text>
+<text x="956" y="538" class="fk-label">FK</text>
+<text x="974" y="538" class="col-text">player_id</text>
+<text x="956" y="553" class="col-text">seed_number</text>
+<text x="956" y="568" class="col-text">seeding_points</text>
+<text x="956" y="583" class="col-text">is_actual_seeding</text>
+<line x1="930" y1="511" x2="1130" y2="511" stroke="#ef6c00" stroke-width="0.5"/>
+<rect x="1202" y="347" width="228" height="377" rx="4" fill="#00000010"/>
+<rect x="1200" y="345" width="228" height="377" rx="4" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.2"/>
+<rect x="1200" y="345" width="228" height="26" rx="4" fill="#7b1fa2"/>
+<rect x="1200" y="367" width="228" height="4" fill="#7b1fa2"/>
+<text x="1314.0" y="362" text-anchor="middle" class="hdr-text" fill="#fff">Matches</text>
+<text x="1208" y="383" class="pk-label">PK</text>
+<text x="1226" y="383" class="col-text">match_id</text>
+<text x="1208" y="398" class="fk-label">FK</text>
+<text x="1226" y="398" class="col-text">draw_id</text>
+<text x="1208" y="413" class="fk-label">FK</text>
+<text x="1226" y="413" class="col-text">round_id</text>
+<text x="1208" y="428" class="fk-label">FK</text>
+<text x="1226" y="428" class="col-text">player1_id</text>
+<text x="1208" y="443" class="fk-label">FK</text>
+<text x="1226" y="443" class="col-text">player2_id</text>
+<text x="1226" y="458" class="col-text">match_number</text>
+<text x="1226" y="473" class="col-text">match_date</text>
+<text x="1208" y="488" class="fk-label">FK</text>
+<text x="1226" y="488" class="col-text">winner_id</text>
+<text x="1208" y="503" class="fk-label">FK</text>
+<text x="1226" y="503" class="col-text">match_status_id</text>
+<text x="1226" y="518" class="col-text">set1_player1</text>
+<text x="1226" y="533" class="col-text">set1_player2</text>
+<text x="1226" y="548" class="col-text">set1_tiebreak_player1</text>
+<text x="1226" y="563" class="col-text">set1_tiebreak_player2</text>
+<text x="1226" y="578" class="col-text">set2_player1</text>
+<text x="1226" y="593" class="col-text">set2_player2</text>
+<text x="1226" y="608" class="col-text">set2_tiebreak_player1</text>
+<text x="1226" y="623" class="col-text">set2_tiebreak_player2</text>
+<text x="1226" y="638" class="col-text">set3_player1</text>
+<text x="1226" y="653" class="col-text">set3_player2</text>
+<text x="1226" y="668" class="col-text">set3_tiebreak_player1</text>
+<text x="1226" y="683" class="col-text">set3_tiebreak_player2</text>
+<text x="1226" y="698" class="col-text">set3_supertiebreak_player1</text>
+<text x="1226" y="713" class="col-text">set3_supertiebreak_player2</text>
+<line x1="1200" y1="371" x2="1428" y2="371" stroke="#7b1fa2" stroke-width="0.5"/>
+<rect x="27" y="772" width="210" height="137" rx="4" fill="#00000010"/>
+<rect x="25" y="770" width="210" height="137" rx="4" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.2"/>
+<rect x="25" y="770" width="210" height="26" rx="4" fill="#7b1fa2"/>
+<rect x="25" y="792" width="210" height="4" fill="#7b1fa2"/>
+<text x="130.0" y="787" text-anchor="middle" class="hdr-text" fill="#fff">PlayerSuspensions</text>
+<text x="33" y="808" class="pk-label">PK</text>
+<text x="51" y="808" class="col-text">suspension_id</text>
+<text x="33" y="823" class="fk-label">FK</text>
+<text x="51" y="823" class="col-text">player_id</text>
+<text x="33" y="838" class="fk-label">FK</text>
+<text x="51" y="838" class="col-text">tournament_id</text>
+<text x="33" y="853" class="fk-label">FK</text>
+<text x="51" y="853" class="col-text">reason_match_status_id</text>
+<text x="51" y="868" class="col-text">suspension_start</text>
+<text x="51" y="883" class="col-text">suspension_end</text>
+<text x="51" y="898" class="col-text">created_at</text>
+<line x1="25" y1="796" x2="235" y2="796" stroke="#7b1fa2" stroke-width="0.5"/>
+<rect x="272" y="772" width="210" height="152" rx="4" fill="#00000010"/>
+<rect x="270" y="770" width="210" height="152" rx="4" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.2"/>
+<rect x="270" y="770" width="210" height="26" rx="4" fill="#7b1fa2"/>
+<rect x="270" y="792" width="210" height="4" fill="#7b1fa2"/>
+<text x="375.0" y="787" text-anchor="middle" class="hdr-text" fill="#fff">PointsHistory</text>
+<text x="278" y="808" class="pk-label">PK</text>
+<text x="296" y="808" class="col-text">id</text>
+<text x="278" y="823" class="fk-label">FK</text>
+<text x="296" y="823" class="col-text">player_id</text>
+<text x="278" y="838" class="fk-label">FK</text>
+<text x="296" y="838" class="col-text">tournament_id</text>
+<text x="278" y="853" class="fk-label">FK</text>
+<text x="296" y="853" class="col-text">age_category_id</text>
+<text x="278" y="868" class="fk-label">FK</text>
+<text x="296" y="868" class="col-text">stage_result_id</text>
+<text x="296" y="883" class="col-text">points_earned</text>
+<text x="296" y="898" class="col-text">tournament_end_date</text>
+<text x="296" y="913" class="col-text">created_at</text>
+<line x1="270" y1="796" x2="480" y2="796" stroke="#7b1fa2" stroke-width="0.5"/>
+<rect x="517" y="772" width="210" height="137" rx="4" fill="#00000010"/>
+<rect x="515" y="770" width="210" height="137" rx="4" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.2"/>
+<rect x="515" y="770" width="210" height="26" rx="4" fill="#7b1fa2"/>
+<rect x="515" y="792" width="210" height="4" fill="#7b1fa2"/>
+<text x="620.0" y="787" text-anchor="middle" class="hdr-text" fill="#fff">WeeklyRanking</text>
+<text x="523" y="808" class="pk-label">PK</text>
+<text x="541" y="808" class="fk-label">FK</text>
+<text x="559" y="808" class="col-text">player_id</text>
+<text x="523" y="823" class="pk-label">PK</text>
+<text x="541" y="823" class="fk-label">FK</text>
+<text x="559" y="823" class="col-text">age_category_id</text>
+<text x="523" y="838" class="fk-label">FK</text>
+<text x="541" y="838" class="col-text">gender_id</text>
+<text x="523" y="853" class="pk-label">PK</text>
+<text x="541" y="853" class="col-text">ranking_year</text>
+<text x="523" y="868" class="pk-label">PK</text>
+<text x="541" y="868" class="col-text">ranking_week</text>
+<text x="541" y="883" class="col-text">total_points</text>
+<text x="541" y="898" class="col-text">rank_position</text>
+<line x1="515" y1="796" x2="725" y2="796" stroke="#7b1fa2" stroke-width="0.5"/>
+<rect x="780" y="770" width="370" height="190" rx="6" fill="#fff" stroke="#cfd8dc" stroke-width="1"/>
+<text x="795" y="792" class="legend-title">Legend</text>
+<rect x="795" y="801" width="14" height="14" rx="2" fill="#78909c"/>
+<text x="817" y="812" class="legend-text">Reference / Lookup (12 tables)</text>
+<rect x="795" y="821" width="14" height="14" rx="2" fill="#43a047"/>
+<text x="817" y="832" class="legend-text">Location (2 tables)</text>
+<rect x="795" y="841" width="14" height="14" rx="2" fill="#1565c0"/>
+<text x="817" y="852" class="legend-text">Core Entities (2 tables)</text>
+<rect x="795" y="861" width="14" height="14" rx="2" fill="#ef6c00"/>
+<text x="817" y="872" class="legend-text">Draw &amp; Entry (4 tables)</text>
+<rect x="795" y="881" width="14" height="14" rx="2" fill="#7b1fa2"/>
+<text x="817" y="892" class="legend-text">Match &amp; Results (4 tables)</text>
+<text x="795" y="918" class="pk-label" style="font-size:10px;">PK</text>
+<text x="817" y="918" class="legend-text">Primary Key</text>
+<text x="795" y="936" class="fk-label" style="font-size:10px;">FK</text>
+<text x="817" y="936" class="legend-text">Foreign Key</text>
+<line x1="795" y1="951" x2="812" y2="951" class="fk-line" stroke-width="1.5"/>
+<circle cx="795" cy="951" r="2.5" class="fk-dot"/>
+<circle cx="812" cy="951" r="2.5" class="fk-dot"/>
+<text x="817" y="955" class="legend-text">Foreign key relationship</text>
+<text x="860" y="1165" text-anchor="middle" class="subtitle-text">ITF Masters Tour — Designed and implemented by Malik Hamdane — 2026</text>
 </svg>

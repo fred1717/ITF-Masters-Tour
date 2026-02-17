@@ -1,419 +1,326 @@
-<svg width="2000" height="1400" xmlns="http://www.w3.org/2000/svg">
-    <!-- Define styles -->
-    <defs>
-        <style>
-            .region-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
-            .vpc-box { fill: #e6f2ff; stroke: #0066cc; stroke-width: 2; stroke-dasharray: 5,5; }
-            .public-subnet { fill: #d4edda; stroke: #28a745; stroke-width: 2; }
-            .private-subnet { fill: #fff3cd; stroke: #ffc107; stroke-width: 2; }
-            .component-box { fill: white; stroke: #333; stroke-width: 1.5; }
-            .lambda { fill: #ff9900; }
-            .rds { fill: #527fff; }
-            .api-gateway { fill: #ff4f8b; }
-            .route53 { fill: #8c4fff; }
-            .sns { fill: #d64988; }
-            .s3 { fill: #569a31; }
-            .cloudfront { fill: #8c4fff; }
-            .secrets { fill: #dd344c; }
-            .eventbridge { fill: #945bb4; }
-            .cloudwatch { fill: #e8334c; }
-            .endpoint { fill: #945bb4; }
-            .vpc-component { fill: #527fff; }
-            
-            .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
-            .arrow-blue { stroke: #0066cc; }
-            .arrow-green { stroke: #28a745; }
-            .arrow-orange { stroke: #ff9900; }
-            .arrow-red { stroke: #dc3545; stroke-width: 3; }
-            .arrow-purple { stroke: #8c4fff; }
-            .arrow-dashed { stroke-dasharray: 5,5; }
-            
-            .label { font-size: 12px; font-weight: bold; }
-            .label-small { font-size: 10px; }
-            .label-tiny { font-size: 8px; }
-            .title { font-size: 16px; font-weight: bold; }
-            .section-title { font-size: 14px; font-weight: bold; fill: #333; }
-        </style>
-        
-        <!-- Arrow markers -->
-        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#333" />
-        </marker>
-        <marker id="arrowhead-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#0066cc" />
-        </marker>
-        <marker id="arrowhead-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#28a745" />
-        </marker>
-        <marker id="arrowhead-orange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#ff9900" />
-        </marker>
-        <marker id="arrowhead-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#dc3545" />
-        </marker>
-        <marker id="arrowhead-purple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-            <polygon points="0 0, 10 3, 0 6" fill="#8c4fff" />
-        </marker>
-    </defs>
-    
-    <!-- Title -->
-    <text x="1000" y="30" text-anchor="middle" class="title" style="font-size: 22px;">ITF Tournament Management System - DR Architecture</text>
-    <text x="1000" y="50" text-anchor="middle" class="label-small" style="font-size: 11px;">Serverless • VPC Endpoints • Multi-Region Failover</text>
-    
-    <!-- External Users -->
-    <g id="users">
-        <rect x="50" y="80" width="140" height="80" class="component-box" rx="3"/>
-        <circle cx="120" cy="105" r="20" fill="#4285f4"/>
-        <text x="120" y="145" text-anchor="middle" class="label">Tennis Players</text>
-        <text x="120" y="160" text-anchor="middle" class="label-small">Web Browser</text>
-    </g>
-    
-    <!-- Route 53 -->
-    <g id="route53">
-        <rect x="250" y="80" width="140" height="80" class="component-box route53" rx="3"/>
-        <text x="320" y="115" text-anchor="middle" class="label">Route 53</text>
-        <text x="320" y="130" text-anchor="middle" class="label-small">Health Checks</text>
-        <text x="320" y="145" text-anchor="middle" class="label-small">Failover Routing</text>
-    </g>
-    
-    <!-- S3 + CloudFront (Optional) -->
-    <g id="s3-cloudfront">
-        <rect x="450" y="80" width="140" height="80" class="component-box cloudfront" rx="3"/>
-        <text x="520" y="105" text-anchor="middle" class="label">CloudFront</text>
-        <text x="520" y="120" text-anchor="middle" class="label-small" fill="#ff9900">(OPTIONAL)</text>
-        <text x="520" y="135" text-anchor="middle" class="label-tiny">+ S3 Static Site</text>
-        <text x="520" y="148" text-anchor="middle" class="label-tiny">HTML/CSS/JS</text>
-    </g>
-    
-    <!-- PRIMARY REGION -->
-    <rect x="50" y="200" width="900" height="700" class="region-box" rx="5"/>
-    <text x="60" y="225" class="section-title">Primary Region: us-east-1</text>
-    
-    <!-- VPC Primary -->
-    <rect x="70" y="250" width="860" height="620" class="vpc-box" rx="5"/>
-    <text x="80" y="275" class="section-title">VPC: ITF-Primary</text>
-    
-    <!-- Private Subnets Primary -->
-    <rect x="90" y="300" width="400" height="540" class="private-subnet" rx="5"/>
-    <text x="100" y="325" class="label">Private Subnet - App (AZ1 + AZ2)</text>
-    
-    <rect x="510" y="300" width="400" height="540" class="private-subnet" rx="5"/>
-    <text x="520" y="325" class="label">Private Subnet - DB (AZ1 + AZ2)</text>
-    
-    <!-- API Gateway Primary -->
-    <g id="api-gateway-primary">
-        <rect x="110" y="350" width="130" height="60" class="component-box api-gateway" rx="3"/>
-        <text x="175" y="375" text-anchor="middle" class="label-small">API Gateway</text>
-        <text x="175" y="390" text-anchor="middle" class="label-tiny">Regional</text>
-        <text x="175" y="403" text-anchor="middle" class="label-tiny">/api/*</text>
-    </g>
-    
-    <!-- Lambda Functions Primary -->
-    <g id="lambda-api-primary">
-        <rect x="110" y="430" width="130" height="70" class="component-box lambda" rx="3"/>
-        <text x="175" y="455" text-anchor="middle" class="label-small">Lambda - API</text>
-        <text x="175" y="470" text-anchor="middle" class="label-tiny">Player enrollment</text>
-        <text x="175" y="483" text-anchor="middle" class="label-tiny">Match results</text>
-        <text x="175" y="496" text-anchor="middle" class="label-tiny">View rankings</text>
-    </g>
-    
-    <g id="lambda-scheduled-primary">
-        <rect x="270" y="430" width="140" height="95" class="component-box lambda" rx="3"/>
-        <text x="340" y="450" text-anchor="middle" class="label-small">Lambda - Scheduled</text>
-        <text x="340" y="465" text-anchor="middle" class="label-tiny">Tue 10:00 - Close entries</text>
-        <text x="340" y="478" text-anchor="middle" class="label-tiny">Fri 20:00 - Publish draw</text>
-        <text x="340" y="491" text-anchor="middle" class="label-tiny">Mon 00:01 - Process points</text>
-        <text x="340" y="504" text-anchor="middle" class="label-tiny">Mon 20:00 - Publish rankings</text>
-    </g>
-    
-    <!-- VPC Endpoints Primary -->
-    <g id="vpc-endpoints-primary">
-        <rect x="110" y="550" width="120" height="50" class="component-box endpoint" rx="3"/>
-        <text x="170" y="570" text-anchor="middle" class="label-small">VPCE: Secrets</text>
-        <text x="170" y="585" text-anchor="middle" class="label-tiny">Interface</text>
-    </g>
-    
-    <g id="vpce-sns-primary">
-        <rect x="250" y="550" width="120" height="50" class="component-box endpoint" rx="3"/>
-        <text x="310" y="570" text-anchor="middle" class="label-small">VPCE: SNS</text>
-        <text x="310" y="585" text-anchor="middle" class="label-tiny">Interface</text>
-    </g>
-    
-    <g id="vpce-logs-primary">
-        <rect x="110" y="620" width="120" height="50" class="component-box endpoint" rx="3"/>
-        <text x="170" y="640" text-anchor="middle" class="label-small">VPCE: Logs</text>
-        <text x="170" y="655" text-anchor="middle" class="label-tiny">Interface</text>
-    </g>
-    
-    <g id="vpce-s3-primary">
-        <rect x="250" y="620" width="120" height="50" class="component-box endpoint" rx="3"/>
-        <text x="310" y="640" text-anchor="middle" class="label-small">VPCE: S3</text>
-        <text x="310" y="655" text-anchor="middle" class="label-tiny">Gateway (FREE)</text>
-    </g>
-    
-    <!-- EventBridge Primary -->
-    <g id="eventbridge-primary">
-        <rect x="110" y="700" width="260" height="60" class="component-box eventbridge" rx="3"/>
-        <text x="240" y="725" text-anchor="middle" class="label-small">EventBridge Scheduler</text>
-        <text x="240" y="740" text-anchor="middle" class="label-tiny">4 cron schedules (Tue/Fri/Mon)</text>
-    </g>
-    
-    <!-- RDS Primary -->
-    <g id="rds-primary">
-        <rect x="550" y="400" width="160" height="100" class="component-box rds" rx="3"/>
-        <text x="630" y="425" text-anchor="middle" class="label-small">RDS MySQL</text>
-        <text x="630" y="440" text-anchor="middle" class="label-small">Multi-AZ</text>
-        <text x="630" y="455" text-anchor="middle" class="label-tiny">db.t3.micro</text>
-        <text x="630" y="468" text-anchor="middle" class="label-tiny">ITF Tournament DB</text>
-        <text x="630" y="481" text-anchor="middle" class="label-tiny">Primary Instance</text>
-    </g>
-    
-    <!-- Secrets Manager Primary -->
-    <g id="secrets-primary">
-        <rect x="730" y="400" width="140" height="60" class="component-box secrets" rx="3"/>
-        <text x="800" y="425" text-anchor="middle" class="label-small">Secrets Manager</text>
-        <text x="800" y="440" text-anchor="middle" class="label-tiny">DB Credentials</text>
-    </g>
-    
-    <!-- SNS Primary -->
-    <g id="sns-primary">
-        <rect x="730" y="480" width="140" height="60" class="component-box sns" rx="3"/>
-        <text x="800" y="505" text-anchor="middle" class="label-small">SNS</text>
-        <text x="800" y="520" text-anchor="middle" class="label-tiny">SMS Notifications</text>
-    </g>
-    
-    <!-- CloudWatch Primary -->
-    <g id="cloudwatch-primary">
-        <rect x="550" y="550" width="160" height="80" class="component-box cloudwatch" rx="3"/>
-        <text x="630" y="575" text-anchor="middle" class="label-small">CloudWatch</text>
-        <text x="630" y="590" text-anchor="middle" class="label-tiny">Logs + Metrics</text>
-        <text x="630" y="603" text-anchor="middle" class="label-tiny">Health Check Alarm</text>
-        <text x="630" y="616" text-anchor="middle" class="label-tiny">Triggers Failover</text>
-    </g>
-    
-    <!-- DR REGION -->
-    <rect x="1050" y="200" width="900" height="700" class="region-box" rx="5"/>
-    <text x="1060" y="225" class="section-title">DR Region: us-west-2</text>
-    
-    <!-- VPC DR -->
-    <rect x="1070" y="250" width="860" height="620" class="vpc-box" rx="5"/>
-    <text x="1080" y="275" class="section-title">VPC: ITF-DR</text>
-    
-    <!-- Private Subnets DR -->
-    <rect x="1090" y="300" width="400" height="540" class="private-subnet" rx="5"/>
-    <text x="1100" y="325" class="label">Private Subnet - App (AZ1 + AZ2)</text>
-    
-    <rect x="1510" y="300" width="400" height="540" class="private-subnet" rx="5"/>
-    <text x="1520" y="325" class="label">Private Subnet - DB (AZ1 + AZ2)</text>
-    
-    <!-- API Gateway DR -->
-    <g id="api-gateway-dr">
-        <rect x="1110" y="350" width="130" height="60" class="component-box api-gateway" rx="3" opacity="0.6"/>
-        <text x="1175" y="375" text-anchor="middle" class="label-small">API Gateway</text>
-        <text x="1175" y="390" text-anchor="middle" class="label-tiny">Dormant</text>
-    </g>
-    
-    <!-- Lambda Functions DR -->
-    <g id="lambda-api-dr">
-        <rect x="1110" y="430" width="130" height="70" class="component-box lambda" rx="3" opacity="0.6"/>
-        <text x="1175" y="455" text-anchor="middle" class="label-small">Lambda - API</text>
-        <text x="1175" y="470" text-anchor="middle" class="label-tiny">Deployed</text>
-        <text x="1175" y="483" text-anchor="middle" class="label-tiny">Not Active</text>
-    </g>
-    
-    <g id="lambda-scheduled-dr">
-        <rect x="1270" y="430" width="140" height="95" class="component-box lambda" rx="3" opacity="0.6"/>
-        <text x="1340" y="450" text-anchor="middle" class="label-small">Lambda - Scheduled</text>
-        <text x="1340" y="465" text-anchor="middle" class="label-tiny">Deployed</text>
-        <text x="1340" y="478" text-anchor="middle" class="label-tiny">Not Active</text>
-    </g>
-    
-    <!-- Lambda Failover -->
-    <g id="lambda-failover-dr">
-        <rect x="1270" y="550" width="140" height="60" class="component-box lambda" rx="3"/>
-        <text x="1340" y="575" text-anchor="middle" class="label-small">Lambda - Failover</text>
-        <text x="1340" y="590" text-anchor="middle" class="label-tiny">Promotes RDS Replica</text>
-    </g>
-    
-    <!-- VPC Endpoints DR -->
-    <g id="vpc-endpoints-dr">
-        <rect x="1110" y="630" width="140" height="50" class="component-box endpoint" rx="3"/>
-        <text x="1180" y="650" text-anchor="middle" class="label-small">VPC Endpoints</text>
-        <text x="1180" y="665" text-anchor="middle" class="label-tiny">Same as Primary</text>
-    </g>
-    
-    <!-- RDS Read Replica DR -->
-    <g id="rds-dr">
-        <rect x="1550" y="400" width="160" height="100" class="component-box rds" rx="3"/>
-        <text x="1630" y="425" text-anchor="middle" class="label-small">RDS MySQL</text>
-        <text x="1630" y="440" text-anchor="middle" class="label-small">Read Replica</text>
-        <text x="1630" y="455" text-anchor="middle" class="label-tiny">Continuous Replication</text>
-        <text x="1630" y="468" text-anchor="middle" class="label-tiny">→ Promoted on Failover</text>
-    </g>
-    
-    <!-- CloudWatch DR -->
-    <g id="cloudwatch-dr">
-        <rect x="1550" y="550" width="160" height="60" class="component-box cloudwatch" rx="3"/>
-        <text x="1630" y="575" text-anchor="middle" class="label-small">CloudWatch</text>
-        <text x="1630" y="590" text-anchor="middle" class="label-tiny">Receives alarm</text>
-    </g>
-    
-    <!-- Arrows - Users to Route53 -->
-    <path d="M 190 120 L 250 120" class="arrow arrow-blue" marker-end="url(#arrowhead-blue)"/>
-    <text x="220" y="115" class="label-tiny" fill="#0066cc">DNS Query</text>
-    
-    <!-- Arrows - Route53 to CloudFront/S3 -->
-    <path d="M 390 120 L 450 120" class="arrow arrow-blue" marker-end="url(#arrowhead-blue)"/>
-    <text x="420" y="115" class="label-tiny" fill="#0066cc">CDN/Static</text>
-    
-    <!-- Arrows - Route53 to Primary API -->
-    <path d="M 320 160 Q 175 260 175 350" class="arrow arrow-green" marker-end="url(#arrowhead-green)"/>
-    <text x="240" y="250" class="label-small" fill="#28a745">Primary (Active)</text>
-    
-    <!-- Arrows - Route53 to DR API (dashed - failover) -->
-    <path d="M 320 160 Q 1175 260 1175 350" class="arrow arrow-red arrow-dashed" marker-end="url(#arrowhead-red)"/>
-    <text x="750" y="250" class="label-small" fill="#dc3545">Failover (On Alarm)</text>
-    
-    <!-- Arrows - API Gateway to Lambda (Primary) -->
-    <path d="M 175 410 L 175 430" class="arrow" marker-end="url(#arrowhead)"/>
-    
-    <!-- Arrows - Lambda to VPC Endpoints (Primary) -->
-    <path d="M 175 500 L 170 550" class="arrow arrow-orange" marker-end="url(#arrowhead-orange)"/>
-    <path d="M 200 500 L 310 550" class="arrow arrow-orange" marker-end="url(#arrowhead-orange)"/>
-    <path d="M 175 500 L 170 620" class="arrow arrow-orange" marker-end="url(#arrowhead-orange)"/>
-    <path d="M 200 500 L 310 620" class="arrow arrow-orange" marker-end="url(#arrowhead-orange)"/>
-    
-    <!-- Arrows - Lambda to RDS (Primary) -->
-    <path d="M 240 465 L 550 450" class="arrow arrow-green" marker-end="url(#arrowhead-green)"/>
-    <text x="380" y="460" class="label-tiny" fill="#28a745">SQL Queries</text>
-    
-    <!-- Arrows - EventBridge to Scheduled Lambda (Primary) -->
-    <path d="M 240 700 L 340 525" class="arrow arrow-purple" marker-end="url(#arrowhead-purple)"/>
-    <text x="280" y="610" class="label-tiny" fill="#8c4fff">Cron Triggers</text>
-    
-    <!-- Arrows - Lambda to CloudWatch (Primary) -->
-    <path d="M 340 525 L 550 590" class="arrow arrow-orange" marker-end="url(#arrowhead-orange)"/>
-    <text x="440" y="560" class="label-tiny" fill="#ff9900">Logs/Metrics</text>
-    
-    <!-- Arrows - VPC Endpoints to Secrets/SNS (Primary) -->
-    <path d="M 230 575 L 730 430" class="arrow arrow-dashed" marker-end="url(#arrowhead)"/>
-    <text x="450" y="500" class="label-tiny">PrivateLink</text>
-    
-    <path d="M 370 575 L 730 510" class="arrow arrow-dashed" marker-end="url(#arrowhead)"/>
-    
-    <!-- Arrows - RDS Replication to DR -->
-    <path d="M 710 450 Q 1290 280 1550 450" class="arrow arrow-blue" marker-end="url(#arrowhead-blue)"/>
-    <text x="1130" y="340" class="label-small" fill="#0066cc">Async Replication</text>
-    
-    <!-- Arrows - CloudWatch Alarm to Failover Lambda -->
-    <path d="M 710 590 Q 1140 520 1270 580" class="arrow arrow-red" marker-end="url(#arrowhead-red)"/>
-    <text x="990" y="540" class="label-small" fill="#dc3545">Triggers Failover</text>
-    
-    <!-- Arrows - Failover Lambda to RDS Replica -->
-    <path d="M 1410 580 L 1550 460" class="arrow arrow-red" marker-end="url(#arrowhead-red)"/>
-    <text x="1470" y="520" class="label-small" fill="#dc3545">Promote to Primary</text>
-    
-    <!-- Legend -->
-    <g id="legend">
-        <rect x="50" y="950" width="450" height="400" fill="white" stroke="#333" stroke-width="1" rx="3"/>
-        <text x="60" y="975" class="label">Legend</text>
-        
-        <line x1="60" y1="995" x2="110" y2="995" class="arrow arrow-blue" marker-end="url(#arrowhead-blue)"/>
-        <text x="120" y="1000" class="label-small">User traffic / DNS routing</text>
-        
-        <line x1="60" y1="1015" x2="110" y2="1015" class="arrow arrow-green" marker-end="url(#arrowhead-green)"/>
-        <text x="120" y="1020" class="label-small">Active runtime (primary region)</text>
-        
-        <line x1="60" y1="1035" x2="110" y2="1035" class="arrow arrow-orange" marker-end="url(#arrowhead-orange)"/>
-        <text x="120" y="1040" class="label-small">Observability (logs/metrics)</text>
-        
-        <line x1="60" y1="1055" x2="110" y2="1055" class="arrow arrow-red" marker-end="url(#arrowhead-red)"/>
-        <text x="120" y="1060" class="label-small">Failover / Disaster recovery</text>
-        
-        <line x1="60" y1="1075" x2="110" y2="1075" class="arrow arrow-purple" marker-end="url(#arrowhead-purple)"/>
-        <text x="120" y="1080" class="label-small">Scheduled automation</text>
-        
-        <line x1="60" y1="1095" x2="110" y2="1095" class="arrow arrow-dashed" marker-end="url(#arrowhead)"/>
-        <text x="120" y="1100" class="label-small">AWS PrivateLink (VPC Endpoints)</text>
-        
-        <text x="60" y="1130" class="label-small">Cost Optimization:</text>
-        <text x="60" y="1145" class="label-tiny">• VPC Endpoints: $21.90/month (vs NAT Gateway $37-70)</text>
-        <text x="60" y="1158" class="label-tiny">• S3 Gateway Endpoint: FREE</text>
-        <text x="60" y="1171" class="label-tiny">• Without CloudFront: ~$128/month total (~$4.30/day)</text>
-        <text x="60" y="1184" class="label-tiny">• With CloudFront: ~$133/month total (~$4.50/day)</text>
-        <text x="60" y="1197" class="label-tiny" fill="#ff9900">• CloudFront is OPTIONAL (recommended for production)</text>
-        
-        <text x="60" y="1220" class="label-small">Architecture Principles:</text>
-        <text x="60" y="1235" class="label-tiny">• Serverless (Lambda + API Gateway)</text>
-        <text x="60" y="1248" class="label-tiny">• No NAT Gateway (VPC Endpoints only)</text>
-        <text x="60" y="1261" class="label-tiny">• Multi-AZ RDS with cross-region replica</text>
-        <text x="60" y="1274" class="label-tiny">• Route 53 health-based failover</text>
-        <text x="60" y="1287" class="label-tiny">• 4 EventBridge schedules (automated tournaments)</text>
-        <text x="60" y="1300" class="label-tiny">• SMS via SNS endpoint (no internet access)</text>
-        <text x="60" y="1313" class="label-tiny">• CloudWatch monitoring + alarms</text>
-    </g>
-    
-    <!-- Annotations -->
-    <g id="annotation-normal">
-        <rect x="550" y="950" width="380" height="85" fill="#d4edda" stroke="#28a745" rx="3"/>
-        <text x="560" y="975" class="label">Normal Operation (Primary Region):</text>
-        <text x="560" y="990" class="label-small">1. Route 53 → CloudFront (optional) → S3 → API Gateway</text>
-        <text x="560" y="1005" class="label-small">2. Lambda functions process requests → RDS MySQL</text>
-        <text x="560" y="1020" class="label-small">3. EventBridge triggers scheduled workflows</text>
-        <text x="560" y="1035" class="label-tiny" fill="#ff9900">Note: CloudFront CDN optional (+$5/month)</text>
-    </g>
-    
-    <g id="annotation-dr">
-        <rect x="550" y="1055" width="380" height="90" fill="#fff3cd" stroke="#dc3545" rx="3"/>
-        <text x="560" y="1080" class="label">Disaster Recovery (Automatic Failover):</text>
-        <text x="560" y="1095" class="label-small">1. CloudWatch health check fails (primary region down)</text>
-        <text x="560" y="1110" class="label-small">2. Route 53 switches DNS to DR region</text>
-        <text x="560" y="1125" class="label-small">3. Lambda promotes RDS read replica → standalone DB</text>
-        <text x="560" y="1140" class="label-small">4. DR API Gateway + Lambdas activated</text>
-    </g>
-    
-    <g id="annotation-vpc">
-        <rect x="550" y="1165" width="380" height="70" fill="#e6f2ff" stroke="#0066cc" rx="3"/>
-        <text x="560" y="1190" class="label">VPC Endpoints Architecture:</text>
-        <text x="560" y="1205" class="label-small">• Lambda in private subnets (no internet access)</text>
-        <text x="560" y="1220" class="label-small">• Interface endpoints: Secrets Manager, SNS, CloudWatch</text>
-        <text x="560" y="1235" class="label-small">• Gateway endpoint: S3 (FREE)</text>
-    </g>
-    
-    <g id="annotation-automation">
-        <rect x="550" y="1255" width="380" height="110" fill="#f3e5f5" stroke="#8c4fff" rx="3"/>
-        <text x="560" y="1280" class="label">Automated Tournament Workflows:</text>
-        <text x="560" y="1295" class="label-small">• Tuesday 10:00 GMT: Close tournament entries + seeding</text>
-        <text x="560" y="1310" class="label-small">• Friday 20:00 GMT: Publish draw + notify players (SMS)</text>
-        <text x="560" y="1325" class="label-small">• Monday 00:01 GMT: Process tournament points</text>
-        <text x="560" y="1340" class="label-small">• Monday 20:00 GMT: Publish weekly rankings</text>
-        <text x="560" y="1355" class="label-small">All via EventBridge cron schedules</text>
-    </g>
-    
-    <!-- Project Info -->
-    <g id="project-info">
-        <rect x="1000" y="950" width="450" height="120" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
-        <text x="1010" y="975" class="label">ITF Tournament Management System</text>
-        <text x="1010" y="995" class="label-small">Database:</text>
-        <text x="1010" y="1010" class="label-tiny">• 18 normalized tables (Players, Tournaments, Draws, Matches, Rankings)</text>
-        <text x="1010" y="1023" class="label-tiny">• Automatic best 4 results calculation (last 12 months)</text>
-        <text x="1010" y="1036" class="label-tiny">• Symmetric draw generation with seeding</text>
-        <text x="1010" y="1049" class="label-tiny">• Weekly ranking publication with ROW_NUMBER() window functions</text>
-        <text x="1010" y="1062" class="label-tiny">• Multi-AZ RDS MySQL with cross-region async replication</text>
-    </g>
-    
-    <g id="tech-stack">
-        <rect x="1000" y="1090" width="450" height="130" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
-        <text x="1010" y="1115" class="label">Technology Stack:</text>
-        <text x="1010" y="1135" class="label-small">Infrastructure:</text>
-        <text x="1010" y="1150" class="label-tiny">• Terraform (IaC) • Lambda (Python) • API Gateway • RDS MySQL</text>
-        <text x="1010" y="1163" class="label-tiny">• Route 53 • S3 Static Website • EventBridge • SNS • CloudWatch</text>
-        <text x="1010" y="1176" class="label-tiny">• VPC Endpoints (Secrets Manager, SNS, Logs, S3)</text>
-        <text x="1010" y="1189" class="label-tiny" fill="#ff9900">• CloudFront CDN (OPTIONAL - adds $5/month)</text>
-        <text x="1010" y="1208" class="label-small">Portfolio Highlights:</text>
-        <text x="1010" y="1223" class="label-tiny">✓ Serverless • ✓ Multi-region DR • ✓ Cost-optimized • ✓ Production-ready</text>
-    </g>
-    
-    <!-- Website URL -->
-    <text x="1000" y="1370" text-anchor="middle" class="label" fill="#0066cc">awscloudcase.com</text>
+<svg width="1400" height="1050" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <style>
+      .region       { fill:#f8f9fa; stroke:#6c757d; stroke-width:2; rx:8; }
+      .vpc          { fill:#e8f0fe; stroke:#1a73e8; stroke-width:1.5; stroke-dasharray:6,3; rx:6; }
+      .pub-subnet   { fill:#d4edda; stroke:#28a745; stroke-width:1.5; rx:5; }
+      .priv-subnet  { fill:#fff8e1; stroke:#f9a825; stroke-width:1.5; rx:5; }
+      .box          { fill:#fff; stroke:#495057; stroke-width:1.2; rx:4; }
+      .box-alb      { fill:#fff; stroke:#8c4fff; stroke-width:1.5; rx:4; }
+      .box-fargate  { fill:#ff9900; stroke:#cc7a00; stroke-width:1.2; rx:4; }
+      .box-rds      { fill:#527fff; stroke:#3a5fcc; stroke-width:1.2; rx:4; }
+      .box-r53      { fill:#8c4fff; stroke:#6a3bcc; stroke-width:1.2; rx:4; }
+      .box-s3       { fill:#569a31; stroke:#3d7222; stroke-width:1.2; rx:4; }
+      .box-acm      { fill:#dd344c; stroke:#b02a3d; stroke-width:1.2; rx:4; }
+      .box-vpce     { fill:#945bb4; stroke:#6d3f87; stroke-width:1.2; rx:4; }
+      .box-cw       { fill:#e8334c; stroke:#c02a3f; stroke-width:1.2; rx:4; }
+      .box-user     { fill:#4285f4; stroke:#2b6bd6; stroke-width:1.2; rx:4; }
+      .box-tf       { fill:#7b42bc; stroke:#5c2e91; stroke-width:1.2; rx:4; }
+
+      .t-title      { font-size:20px; font-weight:700; fill:#212529; }
+      .t-sub        { font-size:12px; fill:#6c757d; }
+      .t-region     { font-size:14px; font-weight:700; fill:#495057; }
+      .t-label      { font-size:11px; font-weight:600; fill:#fff; }
+      .t-label-dk   { font-size:11px; font-weight:600; fill:#212529; }
+      .t-detail     { font-size:9px; fill:#fff; }
+      .t-detail-dk  { font-size:9px; fill:#495057; }
+      .t-subnet     { font-size:10px; font-weight:600; fill:#495057; }
+      .t-legend     { font-size:10px; fill:#495057; }
+      .t-legend-h   { font-size:11px; font-weight:700; fill:#212529; }
+      .t-cost       { font-size:9px; fill:#495057; }
+
+      .arrow        { fill:none; stroke:#495057; stroke-width:1.8; marker-end:url(#ah); }
+      .arrow-blue   { stroke:#1a73e8; marker-end:url(#ah-blue); }
+      .arrow-green  { stroke:#28a745; marker-end:url(#ah-green); }
+      .arrow-red    { stroke:#dc3545; stroke-width:2.2; marker-end:url(#ah-red); }
+      .arrow-orange { stroke:#ff9900; marker-end:url(#ah-orange); }
+      .arrow-dash   { stroke-dasharray:5,4; }
+      .arrow-repl   { stroke:#1a73e8; stroke-width:2; stroke-dasharray:8,4; marker-end:url(#ah-blue); }
+    </style>
+    <marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#495057"/></marker>
+    <marker id="ah-blue" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1a73e8"/></marker>
+    <marker id="ah-green" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#28a745"/></marker>
+    <marker id="ah-red" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#dc3545"/></marker>
+    <marker id="ah-orange" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ff9900"/></marker>
+  </defs>
+
+  <!-- ================================================================ -->
+  <!-- TITLE                                                            -->
+  <!-- ================================================================ -->
+  <text x="700" y="32" text-anchor="middle" class="t-title">ITF Masters Tour — AWS DR Architecture</text>
+  <text x="700" y="50" text-anchor="middle" class="t-sub">Fargate • ALB • RDS PostgreSQL • Route 53 Failover • VPC Endpoints • Terraform</text>
+
+  <!-- ================================================================ -->
+  <!-- GLOBAL SERVICES (above regions)                                  -->
+  <!-- ================================================================ -->
+
+  <!-- User -->
+  <rect x="30" y="72" width="120" height="52" class="box-user"/>
+  <text x="90" y="94" text-anchor="middle" class="t-label">Web Browser</text>
+  <text x="90" y="108" text-anchor="middle" class="t-detail">Tennis Admin / Players</text>
+
+  <!-- Route 53 -->
+  <rect x="230" y="72" width="150" height="52" class="box-r53"/>
+  <text x="305" y="92" text-anchor="middle" class="t-label">Route 53</text>
+  <text x="305" y="106" text-anchor="middle" class="t-detail">awscloudcase.com</text>
+
+  <!-- ACM -->
+  <rect x="440" y="72" width="110" height="52" class="box-acm"/>
+  <text x="495" y="92" text-anchor="middle" class="t-label">ACM</text>
+  <text x="495" y="106" text-anchor="middle" class="t-detail">TLS Certificate</text>
+
+  <!-- S3 -->
+  <rect x="610" y="72" width="140" height="52" class="box-s3"/>
+  <text x="680" y="92" text-anchor="middle" class="t-label">S3</text>
+  <text x="680" y="106" text-anchor="middle" class="t-detail">Evidence &amp; Artifacts</text>
+
+  <!-- Terraform -->
+  <rect x="810" y="72" width="130" height="52" class="box-tf"/>
+  <text x="875" y="92" text-anchor="middle" class="t-label">Terraform</text>
+  <text x="875" y="106" text-anchor="middle" class="t-detail">Infrastructure as Code</text>
+
+  <!-- Arrows: User → Route53 -->
+  <line x1="150" y1="98" x2="228" y2="98" class="arrow arrow-blue"/>
+  <text x="189" y="92" text-anchor="middle" class="t-detail-dk">DNS</text>
+
+  <!-- Arrow: ACM → Route53 (provides cert) -->
+  <line x1="440" y1="98" x2="382" y2="98" class="arrow arrow-dash" style="stroke:#dd344c; marker-end:url(#ah-red)"/>
+
+  <!-- ================================================================ -->
+  <!-- PRIMARY REGION                                                   -->
+  <!-- ================================================================ -->
+  <rect x="30" y="148" width="640" height="530" class="region"/>
+  <text x="50" y="172" class="t-region">Primary Region — us-east-1</text>
+
+  <!-- VPC -->
+  <rect x="50" y="185" width="600" height="478" class="vpc"/>
+  <text x="68" y="205" class="t-subnet" style="fill:#1a73e8;">VPC</text>
+
+  <!-- Public Subnet -->
+  <rect x="70" y="215" width="260" height="105" class="pub-subnet"/>
+  <text x="82" y="233" class="t-subnet">Public Subnet (AZ1 + AZ2)</text>
+
+  <!-- ALB -->
+  <rect x="90" y="245" width="220" height="58" class="box-alb"/>
+  <text x="200" y="267" text-anchor="middle" class="t-label-dk">Application Load Balancer</text>
+  <text x="200" y="281" text-anchor="middle" class="t-detail-dk">HTTPS :443 → target group</text>
+
+  <!-- Private Subnet App -->
+  <rect x="70" y="335" width="260" height="130" class="priv-subnet"/>
+  <text x="82" y="353" class="t-subnet">Private Subnet — App (AZ1 + AZ2)</text>
+
+  <!-- Fargate -->
+  <rect x="90" y="365" width="220" height="82" class="box-fargate"/>
+  <text x="200" y="387" text-anchor="middle" class="t-label">Fargate Task</text>
+  <text x="200" y="401" text-anchor="middle" class="t-detail">Flask Container</text>
+  <text x="200" y="414" text-anchor="middle" class="t-detail">0.25 vCPU · 0.5 GB</text>
+  <text x="200" y="427" text-anchor="middle" class="t-detail">20 routes · Jinja2 · Admin Panel</text>
+
+  <!-- Private Subnet DB -->
+  <rect x="70" y="480" width="260" height="105" class="priv-subnet"/>
+  <text x="82" y="498" class="t-subnet">Private Subnet — DB (AZ1 + AZ2)</text>
+
+  <!-- RDS Primary -->
+  <rect x="90" y="510" width="220" height="60" class="box-rds"/>
+  <text x="200" y="532" text-anchor="middle" class="t-label">RDS PostgreSQL 16</text>
+  <text x="200" y="546" text-anchor="middle" class="t-detail">db.t4g.micro · Multi-AZ · Primary</text>
+  <text x="200" y="558" text-anchor="middle" class="t-detail">24 tables · itf_tournament</text>
+
+  <!-- VPC Endpoints -->
+  <rect x="365" y="335" width="270" height="250" class="priv-subnet"/>
+  <text x="377" y="353" class="t-subnet">VPC Endpoints (no NAT Gateway)</text>
+
+  <rect x="385" y="370" width="110" height="40" class="box-vpce"/>
+  <text x="440" y="388" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: Secrets Mgr</text>
+  <text x="440" y="400" text-anchor="middle" class="t-detail">Interface</text>
+
+  <rect x="510" y="370" width="110" height="40" class="box-vpce"/>
+  <text x="565" y="388" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: Logs</text>
+  <text x="565" y="400" text-anchor="middle" class="t-detail">Interface</text>
+
+  <rect x="385" y="425" width="110" height="40" class="box-vpce"/>
+  <text x="440" y="443" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: ECR</text>
+  <text x="440" y="455" text-anchor="middle" class="t-detail">Interface</text>
+
+  <rect x="510" y="425" width="110" height="40" class="box-vpce"/>
+  <text x="565" y="443" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: S3</text>
+  <text x="565" y="455" text-anchor="middle" class="t-detail">Gateway (FREE)</text>
+
+  <!-- CloudWatch primary -->
+  <rect x="385" y="490" width="235" height="45" class="box-cw"/>
+  <text x="502" y="510" text-anchor="middle" class="t-label">CloudWatch</text>
+  <text x="502" y="524" text-anchor="middle" class="t-detail">Logs · Metrics · Health Check Alarm</text>
+
+  <!-- Secrets Manager primary -->
+  <rect x="385" y="548" width="235" height="30" class="box" style="fill:#fce4ec; stroke:#dd344c;"/>
+  <text x="502" y="568" text-anchor="middle" class="t-detail-dk" style="font-weight:600;">Secrets Manager — DB Credentials</text>
+
+  <!-- Arrows inside primary -->
+  <!-- Route53 → ALB primary (green = active) -->
+  <path d="M 305 124 L 305 140 Q 305 148 200 200 L 200 243" class="arrow arrow-green"/>
+  <text x="225" y="168" class="t-detail-dk" style="fill:#28a745; font-weight:600;">Active</text>
+
+  <!-- ALB → Fargate -->
+  <line x1="200" y1="303" x2="200" y2="363" class="arrow"/>
+
+  <!-- Fargate → RDS -->
+  <line x1="200" y1="447" x2="200" y2="508" class="arrow"/>
+  <text x="212" y="482" class="t-detail-dk">SQL</text>
+
+  <!-- Fargate → VPCE area -->
+  <line x1="310" y1="406" x2="383" y2="406" class="arrow arrow-orange"/>
+
+  <!-- ================================================================ -->
+  <!-- DR REGION                                                        -->
+  <!-- ================================================================ -->
+  <rect x="730" y="148" width="640" height="530" class="region"/>
+  <text x="750" y="172" class="t-region">DR Region — us-west-2</text>
+
+  <!-- VPC DR -->
+  <rect x="750" y="185" width="600" height="478" class="vpc"/>
+  <text x="768" y="205" class="t-subnet" style="fill:#1a73e8;">VPC</text>
+
+  <!-- Public Subnet DR -->
+  <rect x="770" y="215" width="260" height="105" class="pub-subnet"/>
+  <text x="782" y="233" class="t-subnet">Public Subnet (AZ1 + AZ2)</text>
+
+  <!-- ALB DR -->
+  <rect x="790" y="245" width="220" height="58" class="box-alb" opacity="0.55"/>
+  <text x="900" y="267" text-anchor="middle" class="t-label-dk">Application Load Balancer</text>
+  <text x="900" y="281" text-anchor="middle" class="t-detail-dk">Standby</text>
+
+  <!-- Private Subnet App DR -->
+  <rect x="770" y="335" width="260" height="130" class="priv-subnet"/>
+  <text x="782" y="353" class="t-subnet">Private Subnet — App (AZ1 + AZ2)</text>
+
+  <!-- Fargate DR -->
+  <rect x="790" y="365" width="220" height="82" class="box-fargate" opacity="0.55"/>
+  <text x="900" y="387" text-anchor="middle" class="t-label">Fargate Task</text>
+  <text x="900" y="401" text-anchor="middle" class="t-detail">Flask Container</text>
+  <text x="900" y="414" text-anchor="middle" class="t-detail">0.25 vCPU · 0.5 GB</text>
+  <text x="900" y="427" text-anchor="middle" class="t-detail">Standby · Activated on Failover</text>
+
+  <!-- Private Subnet DB DR -->
+  <rect x="770" y="480" width="260" height="105" class="priv-subnet"/>
+  <text x="782" y="498" class="t-subnet">Private Subnet — DB (AZ1 + AZ2)</text>
+
+  <!-- RDS Replica DR -->
+  <rect x="790" y="510" width="220" height="60" class="box-rds" opacity="0.65"/>
+  <text x="900" y="532" text-anchor="middle" class="t-label">RDS PostgreSQL 16</text>
+  <text x="900" y="546" text-anchor="middle" class="t-detail">Read Replica</text>
+  <text x="900" y="558" text-anchor="middle" class="t-detail">→ Promoted on Failover</text>
+
+  <!-- VPC Endpoints DR -->
+  <rect x="1065" y="335" width="270" height="170" class="priv-subnet"/>
+  <text x="1077" y="353" class="t-subnet">VPC Endpoints (mirrors primary)</text>
+
+  <rect x="1085" y="370" width="110" height="40" class="box-vpce" opacity="0.55"/>
+  <text x="1140" y="388" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: Secrets Mgr</text>
+  <text x="1140" y="400" text-anchor="middle" class="t-detail">Interface</text>
+
+  <rect x="1210" y="370" width="110" height="40" class="box-vpce" opacity="0.55"/>
+  <text x="1265" y="388" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: Logs</text>
+  <text x="1265" y="400" text-anchor="middle" class="t-detail">Interface</text>
+
+  <rect x="1085" y="425" width="110" height="40" class="box-vpce" opacity="0.55"/>
+  <text x="1140" y="443" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: ECR</text>
+  <text x="1140" y="455" text-anchor="middle" class="t-detail">Interface</text>
+
+  <rect x="1210" y="425" width="110" height="40" class="box-vpce" opacity="0.55"/>
+  <text x="1265" y="443" text-anchor="middle" class="t-detail" style="font-weight:600;">VPCE: S3</text>
+  <text x="1265" y="455" text-anchor="middle" class="t-detail">Gateway (FREE)</text>
+
+  <!-- CloudWatch DR -->
+  <rect x="1065" y="520" width="270" height="45" class="box-cw" opacity="0.55"/>
+  <text x="1200" y="540" text-anchor="middle" class="t-label">CloudWatch</text>
+  <text x="1200" y="554" text-anchor="middle" class="t-detail">Receives alarm · Monitors replica</text>
+
+  <!-- Route53 → ALB DR (red dashed = failover) -->
+  <path d="M 350 124 L 350 140 Q 750 148 900 200 L 900 243" class="arrow arrow-red arrow-dash"/>
+  <text x="680" y="168" class="t-detail-dk" style="fill:#dc3545; font-weight:600;">Failover</text>
+
+  <!-- ALB → Fargate DR -->
+  <line x1="900" y1="303" x2="900" y2="363" class="arrow" opacity="0.5"/>
+
+  <!-- Fargate → RDS DR -->
+  <line x1="900" y1="447" x2="900" y2="508" class="arrow" opacity="0.5"/>
+
+  <!-- ================================================================ -->
+  <!-- CROSS-REGION REPLICATION                                         -->
+  <!-- ================================================================ -->
+  <path d="M 312 540 Q 550 620 788 540" class="arrow-repl"/>
+  <text x="550" y="610" text-anchor="middle" class="t-detail-dk" style="fill:#1a73e8; font-weight:600; font-size:11px;">Async Cross-Region Replication</text>
+
+  <!-- CloudWatch → Route53 failover trigger -->
+  <path d="M 502 490 Q 502 470 430 150 L 380 124" class="arrow arrow-red arrow-dash" style="stroke-width:1.5;"/>
+  <text x="418" y="142" class="t-detail-dk" style="fill:#dc3545;">Health check</text>
+
+  <!-- ================================================================ -->
+  <!-- LEGEND                                                           -->
+  <!-- ================================================================ -->
+  <rect x="30" y="700" width="520" height="330" fill="#fff" stroke="#dee2e6" stroke-width="1" rx="6"/>
+  <text x="50" y="726" class="t-legend-h">Legend</text>
+
+  <rect x="50" y="740" width="14" height="14" fill="#d4edda" stroke="#28a745" stroke-width="1"/>
+  <text x="72" y="752" class="t-legend">Public Subnet (ALB)</text>
+
+  <rect x="50" y="762" width="14" height="14" fill="#fff8e1" stroke="#f9a825" stroke-width="1"/>
+  <text x="72" y="774" class="t-legend">Private Subnet (Fargate, RDS, VPC Endpoints)</text>
+
+  <line x1="50" y1="793" x2="80" y2="793" class="arrow arrow-green" style="stroke-width:2;"/>
+  <text x="88" y="797" class="t-legend">Active traffic (primary)</text>
+
+  <line x1="50" y1="813" x2="80" y2="813" class="arrow arrow-red arrow-dash" style="stroke-width:2;"/>
+  <text x="88" y="817" class="t-legend">Failover path (on health-check alarm)</text>
+
+  <line x1="50" y1="833" x2="80" y2="833" class="arrow-repl"/>
+  <text x="88" y="837" class="t-legend">Async RDS replication</text>
+
+  <line x1="50" y1="853" x2="80" y2="853" class="arrow arrow-orange" style="stroke-width:2;"/>
+  <text x="88" y="857" class="t-legend">VPC Endpoint connectivity</text>
+
+  <!-- Cost box -->
+  <text x="50" y="888" class="t-legend-h">2-Day Cost Estimate (both regions)</text>
+  <text x="50" y="906" class="t-cost">Fargate (0.25 vCPU, 0.5 GB × 2 regions) .............. ~$1.50</text>
+  <text x="50" y="920" class="t-cost">RDS db.t4g.micro (primary + replica) ...................... ~$2.00</text>
+  <text x="50" y="934" class="t-cost">ALB (× 2 regions) ...................................................... ~$2.00</text>
+  <text x="50" y="948" class="t-cost">Route 53 (hosted zone + health checks) .................. ~$1.50</text>
+  <text x="50" y="962" class="t-cost">ACM ............................................................................ Free</text>
+  <text x="50" y="980" class="t-cost" style="font-weight:700; font-size:10px;">Total ≈ $7–8    (destroyed after screenshot collection)</text>
+
+  <!-- Architecture note -->
+  <text x="50" y="1010" class="t-legend-h">Key Decisions</text>
+  <text x="50" y="1026" class="t-cost">• VPC Endpoints instead of NAT Gateways → saves ~$15/month</text>
+
+  <!-- ================================================================ -->
+  <!-- FLOW ANNOTATIONS                                                 -->
+  <!-- ================================================================ -->
+  <rect x="600" y="700" width="370" height="175" fill="#fff" stroke="#dee2e6" stroke-width="1" rx="6"/>
+  <text x="620" y="726" class="t-legend-h">Normal Operation</text>
+  <text x="620" y="745" class="t-legend">1. Route 53 resolves awscloudcase.com → Primary ALB</text>
+  <text x="620" y="762" class="t-legend">2. ALB terminates TLS (ACM) → forwards to Fargate</text>
+  <text x="620" y="779" class="t-legend">3. Flask app queries RDS PostgreSQL (24 tables)</text>
+  <text x="620" y="796" class="t-legend">4. Admin enters results → points + rankings update</text>
+
+  <text x="620" y="825" class="t-legend-h" style="fill:#dc3545;">Disaster Recovery</text>
+  <text x="620" y="844" class="t-legend">1. CloudWatch health check detects primary failure</text>
+  <text x="620" y="861" class="t-legend">2. Route 53 failover → DR region ALB</text>
+  <text x="620" y="878" class="t-legend">3. RDS read replica promoted to standalone primary</text>
+
+  <!-- ================================================================ -->
+  <!-- DB DETAIL BOX                                                    -->
+  <!-- ================================================================ -->
+  <rect x="1020" y="700" width="350" height="175" fill="#fff" stroke="#dee2e6" stroke-width="1" rx="6"/>
+  <text x="1040" y="726" class="t-legend-h">Database — itf_tournament</text>
+  <text x="1040" y="745" class="t-legend">24 normalised tables · PostgreSQL 16</text>
+  <text x="1040" y="762" class="t-legend">15 prerequisite (reference) + 8 generated</text>
+  <text x="1040" y="779" class="t-legend">59 tournaments · 6,666+ matches</text>
+  <text x="1040" y="796" class="t-legend">Best 4 results over previous 52 weeks</text>
+  <text x="1040" y="813" class="t-legend">4 age/gender categories: M60 · F60 · M65 · F65</text>
+  <text x="1040" y="838" class="t-legend-h">Tech Stack</text>
+  <text x="1040" y="856" class="t-legend">Python · Flask · Jinja2 · psycopg2</text>
+  <text x="1040" y="873" class="t-legend">Terraform · Docker · AWS Fargate · RDS</text>
+
+  <!-- Footer -->
+  <text x="700" y="1038" text-anchor="middle" class="t-sub" style="font-size:11px;">ITF Masters Tour — Designed and implemented by Malik Hamdane — 2026</text>
 </svg>
