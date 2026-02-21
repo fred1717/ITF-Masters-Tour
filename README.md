@@ -695,11 +695,19 @@ git commit -m "Restore evidence/screenshots/live/ accidentally removed in previo
 git push
 ```
 
-**Final README update:**
+**README update:**
 ```bash
 git add README.md
 git status
 git commit -m "Final README — added GitHub commit instructions in section 12.4"
+git push
+```
+
+**Final README update:**
+```bash
+git add README.md
+git status
+git commit -m "Final README — added evidence directory explanation in section 13.10"
 git push
 ```
 
@@ -1205,6 +1213,8 @@ mkdir -p evidence/screenshots
 aws s3 cp s3://itf-masters-tour-evidence/screenshots/ evidence/screenshots/ --recursive
 ```
 
+The `evidence/` directory was originally intended to contain additional subfolders (`logs/`, `costs/`) alongside `screenshots/`.  
+In practice, CloudWatch logs are deleted with the infrastructure on teardown, and cost data is summarised directly in section 11.2 — so only `screenshots/` was needed.
 
 ### 13.11 Teardown
 **From the `terraform` directory:**  
