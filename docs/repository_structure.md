@@ -1,9 +1,13 @@
 ﻿```text
 From top working directory `ITF-Masters-Tour`:
 .env.example
+.gitignore
 app.py
+Dockerfile
 README.md
+requirements.txt
 run_local.sh
+
 
 
 data/
@@ -61,15 +65,20 @@ data/
 
         generated/
             _export_meta.txt                        # meta file to track which generated sql files have been run
-            _run_all_generated_1to58.sql
+            _run_all_generated_1to59.sql
             drawplayers.sql
+            drawseed.sql
+            drawseed_t3to58_draw_9to232.sql
+            drawseed_t59_draw_233to236.sql
             draws.sql                               # from tournament_id=59 (before, all data in that table was prerequisite)
             entries.sql
+            fix_7_unenforced_suspensions.sql
             matches.sql
             playersuspensions.sql
             pointshistory.sql
+            updating_match_dates_t59.sql
             weeklyranking.sql
-            weeklyranking_uyear2026_weeks7and8.sql
+            weeklyranking_year2026_weeks7and8.sql
 
         queries/
             best4results_only_in_weeklyranking.sql
@@ -111,8 +120,8 @@ docs/
     diagrams/
         itf-architecture-diagram.svg
         ITF-ER-Diagram.svg
-    Flask.md
     frontend.md
+    ITF-queries.md
     repository_structure.md
     Rules.md
     script_workflow.md
@@ -120,16 +129,46 @@ docs/
 
 evidence/
     screenshots/
-        AllEntries_T59_M60-F60-M65-F65_10feb2026_0h40.png
-        Skeleton_T59_Draw233_M60_Winner_MatthewKelly_10feb2026_23h19.png
-        Skeleton_T59_Draw234_F60_Winner_HelenKelly_10feb2026_23h21.png
-        Skeleton_T59_Draw235_M65_Winner_MichelDurand_10feb2026_23h23.png
-        Skeleton_T59_Draw236_F65_Winner_SylvieDessange_10feb2026_23h24.png
-        T59_Draw233_M60_MatchList_10feb2026_23h25.png
-        T59_Draw234_F60_MatchList_10feb2026_23h26.png
-        T59_Draw234_F60_MatchList_10feb2026_23h26.png
-        T59_Draw236_F65_MatchList_10feb2026_23h29.png
-        
+        Local/
+            AllEntries_T59_M60-F60-M65-F65_10feb2026_0h40.png
+            Skeleton_T59_Draw233_M60_Winner_MatthewKelly_10feb2026_23h19.png
+            Skeleton_T59_Draw234_F60_Winner_HelenKelly_10feb2026_23h21.png
+            Skeleton_T59_Draw235_M65_Winner_MichelDurand_10feb2026_23h23.png
+            Skeleton_T59_Draw236_F65_Winner_SylvieDessange_10feb2026_23h24.png
+            T59_Draw233_M60_MatchList_10feb2026_23h25.png
+            T59_Draw234_F60_MatchList_10feb2026_23h26.png
+            T59_Draw234_F60_MatchList_10feb2026_23h26.png
+            T59_Draw235_M65_MatchList_10feb2026_23h28.png
+            T59_Draw236_F65_MatchList_10feb2026_23h29.png
+            weeklyranking_2026_week7_F60_11feb2026_23h35.png
+            weeklyranking_2026_week7_F65_11feb2026_23h36.png
+            weeklyranking_2026_week7_M60_11feb2026_23h35.png
+            weeklyranking_2026_week7_M65_11feb2026_23h36.png
+            weeklyranking_2026_week8_F60_11feb2026_23h38.png
+            weeklyranking_2026_week8_F65_11feb2026_23h39.png
+            weeklyranking_2026_week8_M60_11feb2026_23h37.png
+            weeklyranking_2026_week8_M65_11feb2026_23h38.png
+            weeklyranking_2026_week9_F60_11feb2026_23h40.png
+            weeklyranking_2026_week9_F65_11feb2026_23h42.png
+            weeklyranking_2026_week9_M60_11feb2026_23h40.png
+            weeklyranking_2026_week9_M65_11feb2026_23h41.png
+
+        live/
+            awscloudcase_AdminPage_17feb2026_21h46.png
+            awscloudcase_AdminPage_t61_2026_Week10_MarcosJimenez_17feb2026_23h00.png
+            awscloudcase_AdminPage_t61_2026_Week10_MarcosJimenez_player86_entered_17feb2026_23h02.png
+            awscloudcase_t56_draw224_F65_17feb2026_22h53.png
+            awscloudcase_T59_M60_Draw_17feb2026_21h41.png
+            awscloudcase_tournament56_page_17feb2026_22h50.png
+            awscloudcase_tournament59_page_17feb2026_21h38.png
+            awscloudcase_tournaments_page_17feb2026_21h35
+            awscloudcase_tournaments_page_after_Failover_17feb2026_22h12.png
+            awscloudcase_WeeklyRankings_2026_Week9_M60_17feb2026_21h42.png
+            Console_failure_code503_17feb2026_21h55.png
+            Console_Promote_RDS_ReadReplica_BackingUp_Available_17feb2026_22h34.png
+            Console_RDS_ReadReplica_NowPromoted_17feb2026_22h39.png
+            Route53_HealthCheck_17feb2026_22h00.png
+
 
 reports/
     nice_mt400_senior_2026_men60_draw.html
@@ -137,10 +176,14 @@ reports/
 
     exports/
         generate_outputs_t1_58.py
+        __pycache__/
+            generate_outputs_t1_58.cpython-312.pyc
 
 
 scripts/
     __init__.py
+    __pycache__/
+        __init__.cpython-312
 
     generation/
         __init__.py
@@ -165,15 +208,27 @@ scripts/
         entry_service.py
         match_service.py
         view_service.py
+        __pycache__/
+            __init__.cpython-312.sql
+            draw_service.cpython-312.sql
+            entry_service.cpython-312.sql
+            match_service.cpython-312.sql
+            view_service.cpython-312.sql
+
 
     validation
         validate_draw_players.py
         validate_itf_data.py
         validate_tennis_matches.py
+        __pycache__/
+            validate_tennis_matches.cpython-312.sql
 
 
 src/
     __init__.py
+
+    __pycache__/
+        __init__.cpython-312
 
     modules/
         __init__.py
@@ -199,9 +254,53 @@ templates/
 
 
 terraform/
+    .terraform/
+
+    modules/
+        dns/
+            main.tf
+            outputs.tf
+            variables.tf
+
+        ecs/
+            main.tf
+            outputs.tf
+            variables.tf
+
+        rds/
+            main.tf
+            outputs.tf
+            variables.tf
+
+        vpc/
+            main.tf
+            outputs.tf
+            variables.tf
+
+    .terraform.lock.hcl
+    main.tf
+    outputs.tf
+    terraform.tfstate
+    terraform.tfstate.backup
+    terraform.tfvars
+    terraform.tfvars.example
+    variables.tf
 
 
 tests/
+
+
+venv/
+    pyvenv.cfg
+
+    bin/
+
+    include/
+
+    lib/
+
+    lib64/
+
 
 ```
 

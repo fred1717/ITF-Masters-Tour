@@ -18,7 +18,8 @@ The system handles the full tournament lifecycle:
 
 The project serves as a portfolio demonstration of full-stack development, relational database design, and cloud architecture. 
 
-The local application is a Flask web app backed by PostgreSQL (Docker), with a planned short-lived AWS deployment for disaster recovery evidence collection.
+The local application is a Flask web app backed by PostgreSQL (Docker).  
+A short-lived AWS deployment was carried out to demonstrate disaster recovery, and torn down after evidence collection.
 
 All business logic is governed by three sources of truth: 
 - `Rules.md` (ITF tournament rules)
@@ -38,7 +39,7 @@ Browser → Flask (`app.py`, 20 routes) → Service Layer → PostgreSQL 16 (Doc
 
 The Flask application runs locally via `run_local.sh`. 
 It connects to a PostgreSQL 16 instance running in a Docker container (`itf-postgres`). 
-The service layer  encapsulates all business logic, keeping Flask routes thin.
+The service layer encapsulates all business logic, keeping Flask routes thin.
 
 It includes the following modules:
 - `entry_service.py`
@@ -47,9 +48,9 @@ It includes the following modules:
 - `view_service.py`
 
 
-### 2.2 Planned AWS Deployment
+### 2.2 AWS Deployment (completed and torn down)
 ```
-Route53 (aws.cloudcase.com) → ALB → Fargate (Flask) → RDS PostgreSQL
+Route53 (awscloudcase.com) → ALB → Fargate (Flask) → RDS PostgreSQL
 ```
 
 The infrastructure spans two AWS regions for disaster recovery demonstration.
@@ -76,7 +77,7 @@ CloudWatch monitors these.
 It runs in private subnets with Multi-AZ in the primary region and a cross-region read replica in the DR region.
 
 **Networking and DNS**  
-`Route53` resolves `aws.cloudcase.com` with health-check failover routing.  
+`Route53` resolves `awscloudcase.com` with health-check failover routing.  
 `ACM` provides the TLS certificate.   
 4 `VPC Endpoints` to replace `NAT Gateways` in order to reduce cost.
 
@@ -88,7 +89,7 @@ Yet to reach AWS services, VPC Endpoints provide private connectivity without a 
 - VPCE: ECR — Fargate pulls the Docker image from Elastic Container Registry when a task launches.   
     Without this, the container image cannot be downloaded.
 - VPCE: S3 (Gateway) — ECR stores Docker image layers in S3, so this endpoint is required alongside the ECR endpoint.   
-It is free (gateway type, unlike the other three which are interface type and cost ~$7/month each).
+    It is free (gateway type, unlike the other three which are interface type and cost ~$7/month each).
 
 **Disaster recovery**  
 If the primary region health check fails, `Route53` reroutes traffic to the DR region ALB.   
@@ -282,7 +283,7 @@ psql -h localhost -p 5432 -U <username> -d itf_tournament  -f data/sql/generated
 ## 5. Code structure - `/scripts/`and `/src/` structure
 There is a fundamental difference between these two folders:
 
-**The `/src/` repository:**
+**The `/src/` directory:**
 - src/ contains reusable library modules — pure functions and classes with no entry point. 
 - Nothing in `src/` is run directly. 
 - These modules are imported by everything else: 
@@ -290,9 +291,9 @@ There is a fundamental difference between these two folders:
     - recalculation scripts
     - validation scripts
     - Flask services. 
-- They implement the business rules (`Rules.md`) in a single place,  so that logic is never duplicated.
+- They implement the business rules (`Rules.md`) in a single place, so that logic is never duplicated.
 
-**The `/scripts/`repository:**
+**The `/scripts/`directory:**
 - It contains executable workflows — files that are run directly (via CLI or called by Flask).
 - These files orchestrate the `src/` modules to produce a concrete outcome: 
     - generate 10,000 entries
@@ -303,8 +304,7 @@ There is a fundamental difference between these two folders:
 The dependency flows one way: `scripts/` imports from `src/`, never the reverse.
 
 ### 5.1 `/src/modules/`  
-This implements pure business logic (rules engine, score generator, seeding, ranking window, etc.).
-This is pure business logic, no side effects, imported by everything:
+This implements pure business logic (rules engine, score generator, seeding, ranking window, etc.):
 - `rules_engine.py` — centralised Rules.md implementation (probabilities, score weights, deadline calculations)
 - `score_generator.py` — generates tennis scores respecting all distributions from `Rules.md`
 - `seeding_engine.py` — seed placement logic (top 2 opposite halves, 3-4 in correct quarters, etc.)
@@ -335,7 +335,7 @@ These are re-run scripts for tournament 59+ and exports:
 - `generate_outputs_t59.py` — tournament 59 specific outputs
 
 
-### 5.4 `/ scripts/validation/`
+### 5.4 `/scripts/validation/`
 These are gate checks that must pass before data is accepted:
 - `validate_tennis_matches.py`
 - `validate_draw_players.py`
@@ -343,7 +343,7 @@ These are gate checks that must pass before data is accepted:
 
 
 ### 5.5 `/scripts/services/`
-Flask service layer (called by `app.py routes`): see in ### 6.2
+Flask service layer (called by `app.py routes`): see section 6.2
 They are thin wrappers that call `src/modules/` functions:
 - `entry_service.py`
 - `draw_service.py`
@@ -517,21 +517,17 @@ Separately, players receiving a bye were not being marked as first-round winners
 Both were service-layer bugs in `match_service.py` and `view_service.py`.
 
 
-### 10.6 AI-Generated Data Quality
+### 10.6 AI-Assisted Development
 
-Using ChatGPT, Claude Sonnet 4.5, Gemini, there were many problems first with creating the schema, then debugging scripts.
-It is noticeable that AI often struggles with large projects (24 tables), missing tables, hardcoding values in place of an extra table and the use of foreign keys.
-Scripts were repeatedly using wrong column names, which seemed rather avoidable.
+Multiple AI models were used during development (ChatGPT, Claude Sonnet 4.5, Claude Opus 4.6).  
+Several recurring issues emerged:
+- AI-generated schemas often missed tables, hardcoded values instead of creating reference tables with foreign keys, and struggled with the complexity of a 24-table normalised design.  
+- Scripts frequently referenced wrong column names — errors that seemed avoidable given the schema was provided in the prompt.  
+Prior experience with large relational databases made some errors easy to catch, others less so.  
+Without that background, building a similar project with AI assistance alone would be significantly harder.  
+Precise prompting helps in theory, but in practice, models routinely override explicit instructions with their own assumptions.  
+The effective workflow was iterative: generate, inspect, correct, re-prompt — treating AI output as a first draft rather than a finished product.
 
-Having built tons of normalised databases in the past, some errors were easy to spot, others less. 
-I can only imagine how difficult it would be for anyone to build a similar project from scratch without prior experience of building large databases.
-One could imagine that proper prompting and iteration - see @danmartell or @adfasdf ..... 
-In theory, yes, you are as good as your prompting. It makes a lot of sense but practice contradicts the theory.
-This is another topic but you wonder whether some AI models are not geared towards making you pay for more usage by producing deliberate mistakes (see some dubious business models).
-They repeatedly ignore your prompting as it is overriden by their internal logic and training data.
-Then comes a message like "Apologies, that was wasteful" or "Yes, that's on me, your instructions were clear. It won't happen again". You bet! 
-Apologies are often strategy to burn more of your precious quotas. At least, it looks that way. You can limit the damage but not much more. 
-Waiting for a huge customer revolt: follow the money, that is where the power lies.
 
 
 ## 11. Cost Analysis
@@ -572,10 +568,10 @@ Not needed as the old diagram assumed automated scheduling (entry deadlines, dra
 In reality, all of this is done manually through the admin panel. 
 No scheduled triggers exist.
 
-**S3 and domain (`aws.cloudcase.com`)**
+**S3 and domain (`awscloudcase.com`)**
 Both stay in the diagram:
 - `S3` for storing evidence/screenshots after teardown. 
-- `aws.cloudcase.com` via `Route53` + `ACM`.
+- `awscloudcase.com` via `Route53` + `ACM`.
 
 **Cost difference?**
 At 2-day scale: Fargate ~$1.50 vs Lambda ~$0.10. Negligible — architecture fit matters more.
@@ -600,12 +596,20 @@ The monthly cost would be $30–40 if left running. The infrastructure is destro
 The complete codebase — Python scripts, SQL files, Excel extracts, Jinja2 templates, ER diagrams, and screenshot evidence — is pushed to a GitHub repository. 
 This serves as the permanent record of the project after AWS teardown.
 
-A `.gitignore` file excludes files that should not be committed, to be finalised before the first push — candidates include:
+A `.gitignore` file excludes files that should not be committed:
 - `.env`
 - `__pycache__/`
 - `*.pyc`
 - `.idea/`
-- any local Docker volumes.
+- `venv/`
+- `.DS_Store`
+- `*.log`
+- `.vs/`
+- `~$*`
+- `.terraform/`
+- `terraform.tfvars`
+- `terraform.tfstate`
+- `terraform.tfstate.backup`
 
 The repository includes:
 - All source code and configuration files
@@ -644,6 +648,12 @@ __pycache__/
 venv/
 .DS_Store
 *.log
+.vs/
+~$*
+.terraform/
+terraform.tfvars
+terraform.tfstate
+terraform.tfstate.backup
 EOF
 ```
 
@@ -657,6 +667,17 @@ git add .
 git commit -m "Initial commit — full local project with Flask, PostgreSQL schema, 59 tournaments"
 git push -u origin main
 ```
+
+**Final commit (after AWS deployment and evidence collection):**
+```bash
+git rm session-manager-plugin.deb
+git rm itf_backup.dump
+git add README.md docs/repository_structure.md .gitignore evidence/screenshots/live/
+git status
+git commit -m "Final README with completed AWS deployment, updated .gitignore, live evidence screenshots"
+git push
+```
+
 
 
 ## 13. AWS Deployment
@@ -1129,7 +1150,7 @@ aws rds promote-read-replica --db-instance-identifier itf-masters-tour-dr-postgr
 ```text
 An error occurred (InvalidDBInstanceState) when calling the PromoteReadReplica operation: DB Instance is not a read replica.
 ```
-**Explanation**ç
+**Explanation**
 The replica has now been promoted to a standalone primary.  
 It is therefore not a Read Replica anymore.
 Now, the DR application can write data.
@@ -1161,18 +1182,14 @@ aws s3 cp s3://itf-masters-tour-evidence/screenshots/ evidence/screenshots/ --re
 
 
 ### 13.11 Teardown
-**From the `terraform` directory:  
+**From the `terraform` directory:**  
 ```bash
 terraform destroy
 ```
 **Expected output**
 Destroy complete! Resources: 100 destroyed.  
 
-All AWS resources are removed. The total cost for a two-day deployment is approximately $7–8 (see ### 11.2).
-
-
-
-
+All AWS resources are removed. The total cost for a two-day deployment is approximately $7–8 (see section 11.2).
 
 
 
