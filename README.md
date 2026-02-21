@@ -668,13 +668,38 @@ git commit -m "Initial commit — full local project with Flask, PostgreSQL sche
 git push -u origin main
 ```
 
-**Final commit (after AWS deployment and evidence collection):**
+**First commit after AWS deployment and evidence collection:**
 ```bash
 git rm session-manager-plugin.deb
 git rm itf_backup.dump
 git add README.md docs/repository_structure.md .gitignore evidence/screenshots/live/
 git status
 git commit -m "Final README with completed AWS deployment, updated .gitignore, live evidence screenshots"
+git push
+```
+
+**Evidence folder cleanup:**
+```bash
+git rm -r evidence/screenshots/
+git add evidence/screenshots/
+git status
+git commit -m "Clean up evidence/screenshots — remove old structure, re-add Local and live folders"
+git push
+```
+
+**Recovering accidentally deleted files from git history:**
+```bash
+git checkout HEAD~1 -- evidence/screenshots/live/
+git status
+git commit -m "Restore evidence/screenshots/live/ accidentally removed in previous commit"
+git push
+```
+
+**Final README update:**
+```bash
+git add README.md
+git status
+git commit -m "Final README — added GitHub commit instructions in section 12.4"
 git push
 ```
 
